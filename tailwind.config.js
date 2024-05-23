@@ -7,7 +7,12 @@ export default {
   ],
 
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        Exo: "Exo",
+      },
+    },
   },
-  plugins: [require("flowbite/plugin")],
+
+  plugins: [require("flowbite/plugin", "tailwind-scrollbar")],
 };
