@@ -25,3 +25,45 @@ export const login = async (info) => {
     }
   } catch (error) {}
 };
+
+export const Getsingleprofile = async (id) => {
+  console.log("getid", id);
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Profile/GetSingleProfile?id=${id}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const GetMasterRole = async () => {
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Role/GetAllRole`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const UpdatesingleUser = async (formData) => {
+  console.log("newformdata", formData);
+
+  try {
+    var Username = formData.name;
+    const isactive = formData.status;
+    var ID = formData.employeeId;
+    let UpdatedBy = localStorage.getItem("id");
+    const { email, phonenumber, dob, roleId } = formData;
+    const response = await axios.post(
+      "https://samplerouting.findinternship.in/api/Profile/UpdateSingleuser",
+      { ID, Username, UpdatedBy, email, phonenumber, isactive, dob, roleId }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

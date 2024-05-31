@@ -3,7 +3,7 @@ import axios from "axios";
 import { FaEye, FaSearch, FaRegEdit } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 
-const Project = () => {
+const RoleMaster = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -20,12 +20,12 @@ const Project = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://samplerouting.findinternship.in/api/Project?pageNumber=${currentPage}&pageSize=${pageSize}`
+        `https://samplerouting.findinternship.in/api/Role?pageNumber=${currentPage}&pageSize=${pageSize}`
       );
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+      console.log("response", response.data);
       setData(response.data.data); // Assuming the actual data is in the 'data' field
       setTotalPages(response.data.totalPages); // Adjust according to actual API response structure
     } catch (error) {
@@ -46,13 +46,13 @@ const Project = () => {
   };
 
   const filteredData = data.filter((item) =>
-    item.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+    item.roleName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <>
       <div className="py-3 flex items-center text-sm text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">
-        Project Master
+        Role Master
       </div>
       <div className="grid grid-cols-6 gap-4">
         <div className="col-start-1 col-end-3 ...">
@@ -70,7 +70,7 @@ const Project = () => {
               <input
                 type="search"
                 className="peer py-3 pe-0 ps-8 block w-full bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-gray-200 text-sm focus:border-t-transparent focus:border-x-transparent focus:border-b-blue-500 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600"
-                placeholder="Project Name"
+                placeholder="Role Name"
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
@@ -89,7 +89,7 @@ const Project = () => {
               <div className="flex flex-wrap items-center">
                 <div className="relative w-full px-4 max-w-full flex-grow flex-1">
                   <h3 className="font-semibold text-lg text-white">
-                    List of Projects
+                    List of Roles
                   </h3>
                 </div>
               </div>
@@ -114,10 +114,10 @@ const Project = () => {
                   <thead>
                     <tr>
                       <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
-                        Project ID
+                        Role ID
                       </th>
                       <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
-                        Project Name
+                        Role Name
                       </th>
                       <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
                         Status
@@ -127,19 +127,19 @@ const Project = () => {
                   </thead>
                   <tbody>
                     {filteredData.length > 0 ? (
-                      filteredData.map((project) => (
-                        <tr key={project.id}>
+                      filteredData.map((role) => (
+                        <tr key={role.roleId}>
                           <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
                             <span className="p-4 font-bold text-white">
-                              {project.id}
+                              {role.roleId}
                             </span>
                           </th>
                           <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {project.projectName}
+                            {role.roleName}
                           </td>
 
                           <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {project.isActive ? "Active" : "Not Active"}
+                            {role.isActive ? "Active" : "Not Active"}
                           </td>
                           <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right">
                             <div className="flex gap-4">
@@ -165,7 +165,7 @@ const Project = () => {
                           colSpan="6"
                           className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-center"
                         >
-                          No Project found
+                          No Role found
                         </td>
                       </tr>
                     )}
@@ -246,4 +246,4 @@ const Project = () => {
   );
 };
 
-export default Project;
+export default RoleMaster;

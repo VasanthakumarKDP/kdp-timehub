@@ -12,18 +12,23 @@ import {
   RiNotification3Fill,
   RiLogoutCircleRFill,
 } from "react-icons/ri";
+import { FaUserCog, FaGhost } from "react-icons/fa";
+import { VscFileSubmodule } from "react-icons/vsc";
+import { LuLocateFixed } from "react-icons/lu";
 import { SiAwsorganizations } from "react-icons/si";
 import { GrTask } from "react-icons/gr";
 import { IoIosArrowBack } from "react-icons/io";
 import { useMediaQuery } from "react-responsive";
 import { MdMenu } from "react-icons/md";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   let isTabletMid = useMediaQuery({ query: "(max-width: 768px)" });
   const [open, setOpen] = useState(isTabletMid ? false : true);
   const sidebarRef = useRef();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const roleid = localStorage.getItem("roleid");
 
   useEffect(() => {
     if (isTabletMid) {
@@ -37,6 +42,10 @@ const Sidebar = () => {
     isTabletMid && setOpen(false);
   }, [pathname]);
 
+  const logout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
   const Nav_animation = isTabletMid
     ? {
         open: {
@@ -70,15 +79,29 @@ const Sidebar = () => {
         },
       };
 
-  const subMenusBugList = [
+  const subMenusBugListforAdmin = [
     {
       name: "Bug",
       icon: RiBugFill,
-      menus: ["Create", "View"],
+      menus: ["CreateNewBug", "ViewBug"],
     },
   ];
 
-  const subMenusTaskList = [
+  const subMenusBugListforUser = [
+    {
+      name: "Bug",
+      icon: RiBugFill,
+      menus: ["View"],
+    },
+  ];
+  const subMenusTaskListforUser = [
+    {
+      name: "Task",
+      icon: GrTask,
+      menus: ["View"],
+    },
+  ];
+  const subMenusTaskListforAdmin = [
     {
       name: "Task",
       icon: GrTask,
@@ -115,47 +138,54 @@ const Sidebar = () => {
                 Dashboard
               </NavLink>
             </li>
+            {roleid !== "3" && (
+              <>
+                <li>
+                  <NavLink to={"/employee"} className="link">
+                    <RiFolderUserFill size={23} className="min-w-max" />
+                    Employee Master
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to={"/rolemaster"} className="link">
+                    <FaUserCog size={23} className="min-w-max" />
+                    Role Master
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to={"/project"} className="link">
+                    <SiAwsorganizations size={23} className="min-w-max" />
+                    Project Master
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to={"/bugmaster"} className="link">
+                    <FaGhost size={23} className="min-w-max" />
+                    Bug Master
+                  </NavLink>
+                </li>
+              </>
+            )}
             <li>
-              <NavLink to={"/employee"} className="link">
-                <RiFolderUserFill size={23} className="min-w-max" />
-                Employee Master
+              <NavLink to={"/component"} className="link">
+                <VscFileSubmodule size={23} className="min-w-max" />
+                Component Master
               </NavLink>
             </li>
             <li>
-              <NavLink to={"/project"} className="link">
-                <SiAwsorganizations size={23} className="min-w-max" />
-                Project Master
+              <NavLink to={"/bug"} className="link">
+                <LuLocateFixed size={23} className="min-w-max" />
+                Bug
               </NavLink>
             </li>
 
-            {(open || isTabletMid) && (
-              <div className="border-y py-5 border-slate-300 ">
-                <small className="pl-3 text-slate-500 inline-block mb-2">
-                  Bug
-                </small>
-                {subMenusBugList?.map((menu) => (
-                  <div key={menu.name} className="flex flex-col gap-0">
-                    <SubMenu data={menu} />
-                  </div>
-                ))}
-              </div>
-            )}
-            {(open || isTabletMid) && (
-              <div className="border-y py-5 border-slate-300 ">
-                <small className="pl-3 text-slate-500 inline-block mb-2">
-                  Task
-                </small>
-                {subMenusTaskList?.map((menu) => (
-                  <div key={menu.name} className="flex flex-col gap-0">
-                    <SubMenu data={menu} />
-                  </div>
-                ))}
-              </div>
-            )}
             <li>
               <NavLink to={"/notification"} className="link">
                 <RiNotification3Fill size={23} className="min-w-max" />
                 Notification
+                <span className="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+                  0
+                </span>
               </NavLink>
             </li>
           </ul>
@@ -166,7 +196,9 @@ const Sidebar = () => {
                   <p className="text-red-500">Logout</p>
                 </div>
                 <p className="text-red-500 py-1.5 px-3 text-xs bg-red-50 rounded-xl">
-                  <RiLogoutCircleRFill size={23} className="min-w-max" />
+                  <button onClick={logout}>
+                    <RiLogoutCircleRFill size={23} className="min-w-max" />
+                  </button>
                 </p>
               </div>
             </div>

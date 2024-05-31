@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
     "node_modules/flowbite-react/lib/esm/**/*.js",
+    "node_modules/preline/dist/*.js",
   ],
 
   theme: {
@@ -14,5 +15,8 @@ export default {
     },
   },
 
-  plugins: [require("flowbite/plugin", "tailwind-scrollbar")],
+  plugins: [
+    require("flowbite/plugin", "tailwind-scrollbar"),
+    require("preline/plugin"),
+  ],
 };
