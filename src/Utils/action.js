@@ -38,6 +38,37 @@ export const Getsingleprofile = async (id) => {
   }
 };
 
+export const Getsinglerole = async (id) => {
+  console.log("getid", id);
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Role/GetRoleById/${id}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updaterolemaster = async (formData) => {
+  try {
+    console.log(formData);
+    var Id = formData.roleId;
+    let UpdatedBy = localStorage.getItem("id");
+    const { roleId, rolename, status } = formData;
+    const response = await axios.post(
+      "https://samplerouting.findinternship.in/api/Role/UpdateRoleMaster",
+      { Id, rolename, status, UpdatedBy }
+    );
+
+    if (response.status >= 200) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {}
+};
+
 export const GetMasterRole = async () => {
   try {
     const response = await axios.get(
