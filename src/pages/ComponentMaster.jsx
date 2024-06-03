@@ -4,6 +4,7 @@ import { FaEye, FaSearch, FaRegEdit } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import {
   GetsingleComponent,
+  createcomponent,
   getallprojectlist,
   updatecomponentmaster,
 } from "../Utils/action";
@@ -26,8 +27,44 @@ const ComponentMaster = () => {
     status: false,
     projectIds: [],
   });
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createFormData, setCreateFormData] = useState({
+    componentName: "",
+    status: false,
+    projectIds: [],
+  });
+  const [createSelectedProjects, setCreateSelectedProjects] = useState([]);
 
   const pageSize = 5; // Set your desired page size here
+  const handleOpenCreateModal = () => {
+    setCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setCreateModalOpen(false);
+    setCreateFormData({
+      componentName: "",
+      status: true,
+      projectIds: [],
+    });
+    setCreateSelectedProjects([]);
+  };
+  const handleCreateSubmit = async (event) => {
+    event.preventDefault();
+    const newComponentData = {
+      ...createFormData,
+      projectIds: createFormData.projectIds.toString(),
+    };
+    console.log(newComponentData);
+    const result = await createcomponent(newComponentData);
+    console.log(result);
+    if (result === "Created") {
+      handleCloseCreateModal();
+      fetchData();
+      setMessage("New Component Created");
+      setTimeout(() => setMessage(""), 3000);
+    }
+  };
   const handleOpenModal = (modalId, componentId) => {
     console.log("empid", componentId);
     setOpenModal(modalId);
@@ -110,6 +147,20 @@ const ComponentMaster = () => {
     }
   }, [openModal, componentId]);
   useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const projects = await getallprojectlist();
+        console.log(projects);
+        setProjects(projects.data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+    fetchData();
+  }, []);
+  useEffect(() => {
     fetchData();
   }, [currentPage]);
 
@@ -157,6 +208,111 @@ const ComponentMaster = () => {
           <div className="text-sm font-normal">{message}</div>
         </div>
       )}
+      {createModalOpen && (
+        <div
+          id="create-modal"
+          className="fixed top-0 left-0 z-50 w-full h-full flex justify-center items-center bg-black bg-opacity-50"
+        >
+          <div className="bg-white border shadow-sm rounded-xl max-w-sm w-full m-3">
+            <div className="flex justify-between items-center py-3 px-4 border-b">
+              <h3 className="font-bold">Create New Component</h3>
+              <button
+                type="button"
+                className="h-7 w-7 text-gray-800 hover:bg-gray-100 rounded-full"
+                onClick={handleCloseCreateModal}
+              >
+                <svg
+                  className="h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4">
+              <form onSubmit={handleCreateSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium">
+                    Component Name
+                  </label>
+                  <input
+                    type="text"
+                    value={createFormData.componentName}
+                    onChange={(e) =>
+                      setCreateFormData({
+                        ...createFormData,
+                        componentName: e.target.value,
+                      })
+                    }
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium">
+                    Assign Project
+                  </label>
+                  <Select
+                    isMulti
+                    options={projects.map((project) => ({
+                      value: project.id,
+                      label: project.projectName,
+                    }))}
+                    value={createSelectedProjects}
+                    onChange={(selected) => {
+                      setCreateSelectedProjects(selected);
+                      setCreateFormData({
+                        ...createFormData,
+                        projectIds: selected.map((s) => s.value),
+                      });
+                    }}
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium">Status</label>
+                  <select
+                    value={createFormData.status}
+                    onChange={(e) =>
+                      setCreateFormData({
+                        ...createFormData,
+                        status: e.target.value === "true",
+                      })
+                    }
+                    className="w-full px-3 py-2 mt-1 border rounded-md"
+                  >
+                    <option value="true">Active</option>
+                    <option value="false">Not Active</option>
+                  </select>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    className="py-2 px-3 mr-2 bg-gray-200 rounded-md"
+                    onClick={handleCloseCreateModal}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="submit"
+                    className="py-2 px-3 bg-blue-600 text-white rounded-md"
+                  >
+                    Create
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="py-3 flex items-center text-sm text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">
         Component Master
@@ -165,6 +321,7 @@ const ComponentMaster = () => {
         <div className="col-start-1 col-end-3 ...">
           <button
             type="button"
+            onClick={handleOpenCreateModal}
             className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
           >
             Create New

@@ -201,3 +201,25 @@ export const UpdatesingleUser = async (formData) => {
     throw error;
   }
 };
+
+//Create new Component Master
+export const createcomponent = async (values) => {
+  try {
+    console.log("values", values);
+
+    const userid = localStorage.getItem("id");
+    const name = values.componentName;
+    const { status } = values;
+    var projectids = values.projectIds;
+    const response = await axios.post(
+      "https://localhost:7060/api/Components/CreatenewComponent",
+      { projectids, name, status, userid }
+    );
+
+    if (response.status >= 200) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {}
+};

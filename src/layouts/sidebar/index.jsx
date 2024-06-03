@@ -138,7 +138,8 @@ const Sidebar = () => {
                 Dashboard
               </NavLink>
             </li>
-            {roleid !== "3" && (
+
+            {roleid == "1" && (
               <>
                 <li>
                   <NavLink to={"/employee"} className="link">
@@ -164,20 +165,42 @@ const Sidebar = () => {
                     Bug Master
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink to={"/component"} className="link">
+                    <VscFileSubmodule size={23} className="min-w-max" />
+                    Component Master
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to={"/bug"} className="link">
+                    <LuLocateFixed size={23} className="min-w-max" />
+                    Bug
+                  </NavLink>
+                </li>
               </>
             )}
-            <li>
-              <NavLink to={"/component"} className="link">
-                <VscFileSubmodule size={23} className="min-w-max" />
-                Component Master
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to={"/bug"} className="link">
-                <LuLocateFixed size={23} className="min-w-max" />
-                Bug
-              </NavLink>
-            </li>
+
+            {roleid == "6" && (
+              <>
+                <li>
+                  <NavLink to={"/component"} className="link">
+                    <VscFileSubmodule size={23} className="min-w-max" />
+                    Component Master
+                  </NavLink>
+                </li>
+              </>
+            )}
+
+            {roleid == "3" && (
+              <>
+                <li>
+                  <NavLink to={"/bug"} className="link">
+                    <LuLocateFixed size={23} className="min-w-max" />
+                    Bug
+                  </NavLink>
+                </li>
+              </>
+            )}
 
             <li>
               <NavLink to={"/notification"} className="link">

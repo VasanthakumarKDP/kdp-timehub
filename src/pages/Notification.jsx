@@ -22,15 +22,9 @@ const MultiSelect = () => {
   };
 
   return (
-    <Select
-      isMulti
-      options={projects.map((project) => ({
-        value: project.id,
-        label: project.projectName,
-      }))}
-      value={selectedProjects}
-      onChange={handleChange}
-    />
+    <>
+      <h1>Welcome to Notification</h1>
+    </>
   );
 };
 
