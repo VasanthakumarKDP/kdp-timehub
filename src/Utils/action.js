@@ -212,7 +212,7 @@ export const createcomponent = async (values) => {
     const { status } = values;
     var projectids = values.projectIds;
     const response = await axios.post(
-      "https://localhost:7060/api/Components/CreatenewComponent",
+      "https://samplerouting.findinternship.in/api/Components/CreatenewComponent",
       { projectids, name, status, userid }
     );
 
