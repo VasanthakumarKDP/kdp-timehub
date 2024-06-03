@@ -25,7 +25,7 @@ const EmployeeMaster = () => {
     employeeId: "",
     name: "",
     email: "",
-    dob: "",
+
     phonenumber: "",
     status: false,
     dob: new Date(),
