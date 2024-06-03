@@ -51,13 +51,13 @@ const ViewEmployee = () => {
       <button
         type="button"
         onClick={() => navigate("/employee")}
-        class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+        className="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
       >
         Back
       </button>
-      <div class="py-3 flex items-center text-md text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">
-        <div class="flex items-center gap-4">
-          <div class="font-medium dark:text-white">
+      <div className="py-3 flex items-center text-md text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">
+        <div className="flex items-center gap-4">
+          <div className="font-medium dark:text-white">
             <div>{employee.fullname}</div>
             <div>
               <span
@@ -93,68 +93,68 @@ const ViewEmployee = () => {
 
       {employee ? (
         <>
-          <div class="bg-white overflow-hidden shadow rounded-lg border">
-            <div class="px-4 py-5 sm:px-6">
-              <h3 class="text-lg leading-6 font-medium text-gray-900">
+          <div className="bg-white overflow-hidden shadow rounded-lg border">
+            <div className="px-4 py-5 sm:px-6">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
                 Profile Details
               </h3>
-              <p class="mt-1 max-w-2xl text-sm text-gray-500">
+              <p className="mt-1 max-w-2xl text-sm text-gray-500">
                 This is the information about the Employee.
               </p>
             </div>
-            <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
-              <dl class="sm:divide-y sm:divide-gray-200">
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt class="text-sm font-medium text-gray-500">Full name</dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+              <dl className="sm:divide-y sm:divide-gray-200">
+                <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium text-gray-500">Full name</dt>
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                     {employee.fullname}
                   </dd>
                 </div>
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt class="text-sm font-medium text-gray-500">Role Name</dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    <span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-lime-600 dark:text-lime-600">
+                <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium text-gray-500">Role Name</dt>
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                    <span className="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-lime-600 dark:text-lime-600">
                       {employee.rolename}
                     </span>
                   </dd>
                 </div>
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt class="text-sm font-medium text-gray-500">
+                <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium text-gray-500">
                     Email address
                   </dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                     {employee.email}
                   </dd>
                 </div>
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt class="text-sm font-medium text-gray-500">
+                <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium text-gray-500">
                     Phone number
                   </dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                     {employee.phonenumber}
                   </dd>
                 </div>
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt class="text-sm font-medium text-gray-500">
+                <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium text-gray-500">
                     Date of Birth
                   </dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                     {formatDate(employee.dob)}
                     <br />
                   </dd>
                 </div>
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt class="text-sm font-medium text-gray-500">
+                <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium text-gray-500">
                     Assigned Project
                   </dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                     NIL
                   </dd>
                 </div>
               </dl>
             </div>
           </div>
-          <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+          <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
         </>
       ) : (
         <p>Loading...</p>

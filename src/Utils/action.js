@@ -69,6 +69,97 @@ export const updaterolemaster = async (formData) => {
   } catch (error) {}
 };
 
+export const Getsingleproject = async (id) => {
+  console.log("getid", id);
+  try {
+    const response = await axios.get(
+      `https://localhost:7060/api/Project/GetProjectById/${id}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const GetsingleBug = async (id) => {
+  console.log("getid", id);
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Bug/GetBugById/${id}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+export const updatecomponentmaster = async (formData) => {
+  try {
+    console.log(formData);
+    var Id = formData.componentId;
+    let UpdatedBy = localStorage.getItem("id");
+    var projectids = formData.projectids;
+    var name = formData.componentName;
+    const { status } = formData;
+    const response = await axios.post(
+      "https://samplerouting.findinternship.in/api/Components/UpdateComponent",
+      { Id, projectids, name, status, UpdatedBy }
+    );
+
+    if (response.status >= 200) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {}
+};
+export const GetsingleComponent = async (id) => {
+  console.log("getid", id);
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Components/GetComponentById/${id}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+export const updateBugmaster = async (formData) => {
+  try {
+    console.log(formData);
+    var Id = formData.bugId;
+    let UpdatedBy = localStorage.getItem("id");
+    const { bugType1, status } = formData;
+    const response = await axios.post(
+      "https://samplerouting.findinternship.in/api/Bug/UpdateBugtype",
+      { Id, bugType1, status, UpdatedBy }
+    );
+
+    if (response.status >= 200) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {}
+};
+
+export const updateprojectmaster = async (formData) => {
+  try {
+    console.log(formData);
+    var Id = formData.projectId;
+    let UpdatedBy = localStorage.getItem("id");
+    const { projectname, status } = formData;
+    const response = await axios.post(
+      "https://localhost:7060/api/Project/Updateproject",
+      { Id, projectname, status, UpdatedBy }
+    );
+
+    if (response.status >= 200) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {}
+};
 export const GetMasterRole = async () => {
   try {
     const response = await axios.get(
@@ -77,6 +168,18 @@ export const GetMasterRole = async () => {
     return response;
   } catch (error) {
     throw error;
+  }
+};
+
+export const getallprojectlist = async () => {
+  try {
+    // Simulate a 3-second delay
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Project/GetallProject`
+    );
+    return response;
+  } catch (error) {
+    console.error("Error fetching data:", error);
   }
 };
 
