@@ -176,7 +176,7 @@ const Sidebar = () => {
                 </NavLink>
               </li>
             )} */}
-            <li>
+            {/* <li>
               <NavLink to="/notification" className="link">
                 <RiNotification3Fill size={23} className="min-w-max" />
                 Notification
@@ -184,7 +184,7 @@ const Sidebar = () => {
                   0
                 </span>
               </NavLink>
-            </li>
+            </li> */}
           </ul>
           {/* {open && (
             <div className="flex-1 text-sm z-50 max-h-48 my-auto whitespace-pre w-full font-medium">
