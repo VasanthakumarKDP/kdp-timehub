@@ -7,9 +7,10 @@ import { VscDebugAll } from "react-icons/vsc";
 import WelcomeBanner from "../components/WelcomeBanner";
 import Header from "../components/Header";
 import axios from "axios";
+import secureLocalStorage from "react-secure-storage";
 const Dashboard = () => {
   const [greeting, setGreeting] = useState("");
-  const id = localStorage.getItem("id");
+  let id = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
   const [leaveData, setLeaveData] = useState([]);
   useEffect(() => {
     // Get the current hour

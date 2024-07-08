@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import secureLocalStorage from "react-secure-storage";
 const convertToUTCString = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
@@ -22,9 +22,10 @@ export const login = async (info) => {
       const name = response.data.name;
       const roleid = response.data.roleId;
       const userid = response.data.id;
+      secureLocalStorage.setItem("UezU/D9QwECM6CHTuH6Iow==", roleid); // Role Id
+      secureLocalStorage.setItem("JX8tKX+J9YwrPaEdSEwF+w==", userid); //User Id
       localStorage.setItem("token", token);
       localStorage.setItem("name", name);
-      localStorage.setItem("roleid", roleid);
       localStorage.setItem("id", userid);
       return response;
     }
@@ -56,7 +57,7 @@ export const Getsinglerole = async (id) => {
 export const updaterolemaster = async (formData) => {
   try {
     var Id = formData.roleId;
-    let UpdatedBy = localStorage.getItem("id");
+    let UpdatedBy = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     const { roleId, rolename, status } = formData;
     const response = await axios.post(
       "https://samplerouting.findinternship.in/api/Role/UpdateRoleMaster",
@@ -95,7 +96,7 @@ export const GetsingleBug = async (id) => {
 export const updatecomponentmaster = async (formData) => {
   try {
     var Id = formData.componentId;
-    let UpdatedBy = localStorage.getItem("id");
+    let UpdatedBy = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     var projectids = formData.projectids;
     var name = formData.componentName;
     const { status } = formData;
@@ -146,7 +147,7 @@ export const Getactivebug = async () => {
 export const updateBugmaster = async (formData) => {
   try {
     var Id = formData.bugId;
-    let UpdatedBy = localStorage.getItem("id");
+    let UpdatedBy = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     const { bugType1, status } = formData;
     const response = await axios.post(
       "https://samplerouting.findinternship.in/api/Bug/UpdateBugtype",
@@ -164,7 +165,7 @@ export const updateBugmaster = async (formData) => {
 export const updateprojectmaster = async (formData) => {
   try {
     var Id = formData.projectId;
-    let UpdatedBy = localStorage.getItem("id");
+    let UpdatedBy = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     const { projectname, status } = formData;
     const response = await axios.post(
       "https://samplerouting.findinternship.in/api/Project/Updateproject",
@@ -229,7 +230,7 @@ export const UpdatesingleUser = async (formData) => {
     var Username = formData.name;
     const isactive = formData.status;
     var ID = formData.employeeId;
-    let UpdatedBy = localStorage.getItem("id");
+    let UpdatedBy = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     const { email, phonenumber, dob, roleId } = formData;
     const response = await axios.post(
       "https://samplerouting.findinternship.in/api/Profile/UpdateSingleuser",
@@ -244,7 +245,7 @@ export const UpdatesingleUser = async (formData) => {
 //Create new Component Master
 export const createcomponent = async (values) => {
   try {
-    const userid = localStorage.getItem("id");
+    const userid = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     const name = values.componentName;
     const { status } = values;
     var projectids = values.projectIds;
@@ -263,7 +264,7 @@ export const createcomponent = async (values) => {
 
 export const createleave = async (values) => {
   try {
-    const createdby = localStorage.getItem("id");
+    const createdby = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     const leavemaster = values.leaveName;
     const { status } = values;
     const response = await axios.post(
@@ -282,7 +283,7 @@ export const createleave = async (values) => {
 export const updateleavemaster = async (formData) => {
   try {
     var Id = formData.leaveId;
-    let UpdatedBy = localStorage.getItem("id");
+    let UpdatedBy = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     var leavemaster = formData.leaveName;
     const { status } = formData;
     const response = await axios.post(
@@ -332,7 +333,7 @@ export const updateleaveallocation = async (formData) => {
     const selfmarraige = formData.selfmarraige;
     const sbimarriage = formData.sbimarriage;
     const bereavement = formData.bereavement;
-    let UpdatedBy = localStorage.getItem("id");
+    let UpdatedBy = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     const response = await axios.post(
       "https://samplerouting.findinternship.in/api/Leave/UpdateLeaveAllocate",
       {
@@ -369,8 +370,8 @@ export const createnewleavereq = async (values) => {
 
     var leavemaster = "string";
     var fullname = "string";
-    const createdby = localStorage.getItem("id");
-    const profileid = localStorage.getItem("id");
+    let createdby = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
+    let profileid = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     const response = await axios.post(
       "https://samplerouting.findinternship.in/api/Leave/CreateNewLeave",
       {
@@ -396,7 +397,7 @@ export const createnewleavereq = async (values) => {
 export const deleteleavereq = async (values) => {
   try {
     const leaveid = values;
-    const UpdatedBy = localStorage.getItem("id");
+    let UpdatedBy = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     var leavemaster = "string";
     var fullname = "string";
     const startdate = new Date();

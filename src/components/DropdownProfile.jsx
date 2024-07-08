@@ -3,11 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import Transition from "../Utils/Transition";
 
 import UserAvatar from "../assets/Images/user-avatar-32.png";
+import secureLocalStorage from "react-secure-storage";
 
 function DropdownProfile({ align }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const username = localStorage.getItem("name");
-  const roleId = parseInt(localStorage.getItem("roleid"));
+  let roleId = secureLocalStorage.getItem("UezU/D9QwECM6CHTuH6Iow==");
   const trigger = useRef(null);
   const dropdown = useRef(null);
   const navigate = useNavigate();

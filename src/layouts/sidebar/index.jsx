@@ -17,6 +17,7 @@ import { SiAwsorganizations } from "react-icons/si";
 import { GrTask } from "react-icons/gr";
 import { IoIosArrowBack } from "react-icons/io";
 import { MdMenu } from "react-icons/md";
+import secureLocalStorage from "react-secure-storage";
 
 const Sidebar = () => {
   const isTabletMid = useMediaQuery({ query: "(max-width: 768px)" });
@@ -24,8 +25,7 @@ const Sidebar = () => {
   const sidebarRef = useRef();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const roleid = localStorage.getItem("roleid");
-
+  let roleid = secureLocalStorage.getItem("UezU/D9QwECM6CHTuH6Iow==");
   useEffect(() => {
     setOpen(!isTabletMid);
   }, [isTabletMid]);
@@ -106,7 +106,7 @@ const Sidebar = () => {
                 Dashboard
               </NavLink>
             </li>
-            {["1", "3", "6"].includes(roleid) && (
+            {[1, 3, 6].includes(roleid) && (
               <li>
                 <NavLink to="/leavetransaction" className="link">
                   <FaUserCog size={23} className="min-w-max" />
@@ -114,7 +114,7 @@ const Sidebar = () => {
                 </NavLink>
               </li>
             )}
-            {roleid === "1" && (
+            {roleid === 1 && (
               <>
                 <li>
                   <NavLink to="/employee" className="link">
@@ -160,7 +160,7 @@ const Sidebar = () => {
                 </li>
               </>
             )}
-            {roleid === "6" && (
+            {roleid === 6 && (
               <li>
                 <NavLink to="/component" className="link">
                   <VscFileSubmodule size={23} className="min-w-max" />

@@ -17,8 +17,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import {
-  Getsingleprofile,
-  GetMasterRole,
   getallholidaylist,
   getallleavemaster,
   createnewleavereq,
@@ -27,6 +25,7 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { eachDayOfInterval, format, isSameDay, startOfDay } from "date-fns";
+import secureLocalStorage from "react-secure-storage";
 
 const Leave = () => {
   const navigate = useNavigate();
@@ -204,7 +203,7 @@ const Leave = () => {
       ...createFormData,
       totalDays: createFormData.totalDays || days,
     };
-    console.log("formdata", formData);
+
     const result = await createnewleavereq(formData);
 
     if (result === 1) {
@@ -227,10 +226,10 @@ const Leave = () => {
 
   const fetchData = async () => {
     try {
-      const loggedin = localStorage.getItem("id");
+      let loggedin = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
 
       const url =
-        loggedin === "33"
+        loggedin === 33
           ? `https://samplerouting.findinternship.in/api/Leave/Getallleave`
           : `https://samplerouting.findinternship.in/api/Leave/GetLeaveTransactionbyprofile/${loggedin}`;
 
