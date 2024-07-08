@@ -166,9 +166,9 @@ const Leave = () => {
 
             <button
               type="button"
-              onClick={() =>
-                handleOpenModal("hs-small-modal", info.row.original.id)
-              }
+              // onClick={() =>
+              //   handleOpenModal("hs-small-modal", info.row.original.id)
+              // }
               className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-darkblue disabled:opacity-50 disabled:pointer-events-none"
             >
               <FaRegEdit />
