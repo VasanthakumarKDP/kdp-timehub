@@ -1,5 +1,12 @@
 import axios from "axios";
 
+const convertToUTCString = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}T00:00:00.000Z`;
+};
+
 export const login = async (info) => {
   const { email, password } = info;
   try {
@@ -354,8 +361,10 @@ export const updateleaveallocation = async (formData) => {
 export const createnewleavereq = async (values) => {
   try {
     const leaveId = values.selectedLeaveId;
-    const startdate = values.startDate;
-    const enddate = values.endDate;
+    // const startdate = values.startDate;
+    const startdate = convertToUTCString(values.startDate);
+    const enddate = convertToUTCString(values.endDate);
+
     const noofdays = String(values.totalDays);
 
     var leavemaster = "string";

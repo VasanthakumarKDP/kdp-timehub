@@ -26,12 +26,12 @@ import {
 } from "../Utils/action";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { eachDayOfInterval, format, isSameDay, parseISO } from "date-fns";
+import { eachDayOfInterval, format, isSameDay, startOfDay } from "date-fns";
 
 const Leave = () => {
   const navigate = useNavigate();
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [selectedLeaveId, setSelectedLeaveId] = useState("");
+
   const [startDateSelected, setStartDateSelected] = useState(false);
   const [leavemaster, setleavemaster] = useState([]);
   const [holidayss, setHolidayss] = useState([]);
@@ -204,7 +204,7 @@ const Leave = () => {
       ...createFormData,
       totalDays: createFormData.totalDays || days,
     };
-
+    console.log("formdata", formData);
     const result = await createnewleavereq(formData);
 
     if (result === 1) {
@@ -307,6 +307,27 @@ const Leave = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
+  const handleStartDateChange = (date) => {
+    setCreateFormData((prev) => ({
+      ...prev,
+      startDate: date,
+      endDate: date > prev.endDate ? date : prev.endDate,
+    }));
+    setStartDateSelected(true);
+  };
+
+  // Function to handle end date change
+  const handleEndDateChange = (date) => {
+    if (date >= createFormData.startDate) {
+      setCreateFormData((prev) => ({
+        ...prev,
+        endDate: date,
+      }));
+      setDays(calculateWeekdays(createFormData.startDate, date));
+    } else {
+      alert("End date must be after or the same as the start date");
+    }
+  };
 
   return (
     <>
@@ -398,14 +419,7 @@ const Leave = () => {
                   </label>
                   <DatePicker
                     selected={createFormData.startDate}
-                    onChange={(date) => {
-                      setCreateFormData((prev) => ({
-                        ...prev,
-                        startDate: date,
-                        endDate: date > prev.endDate ? date : prev.endDate,
-                      }));
-                      setStartDateSelected(true);
-                    }}
+                    onChange={handleStartDateChange}
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     required
                     filterDate={isWeekdayAndNotHoliday}
@@ -448,21 +462,7 @@ const Leave = () => {
                       </label>
                       <DatePicker
                         selected={createFormData.endDate}
-                        onChange={(date) => {
-                          if (date >= createFormData.startDate) {
-                            setCreateFormData((prev) => ({
-                              ...prev,
-                              endDate: date,
-                            }));
-                            setDays(
-                              calculateWeekdays(createFormData.startDate, date)
-                            );
-                          } else {
-                            alert(
-                              "End date must be after or the same as the start date"
-                            );
-                          }
-                        }}
+                        onChange={handleEndDateChange}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                         required
                         minDate={createFormData.startDate}
