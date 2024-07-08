@@ -9,6 +9,7 @@ import {
   updatecomponentmaster,
 } from "../Utils/action";
 import Select from "react-select";
+import Header from "../components/Header";
 
 const ComponentMaster = () => {
   const [data, setData] = useState([]);
@@ -55,10 +56,9 @@ const ComponentMaster = () => {
       ...createFormData,
       projectIds: createFormData.projectIds.toString(),
     };
-    console.log(newComponentData);
+  
     const result = await createcomponent(newComponentData);
-    console.log(result);
-    if (result === "Created") {
+      if (result === "Created") {
       handleCloseCreateModal();
       fetchData();
       setMessage("New Component Created");
@@ -66,7 +66,7 @@ const ComponentMaster = () => {
     }
   };
   const handleOpenModal = (modalId, componentId) => {
-    console.log("empid", componentId);
+
     setOpenModal(modalId);
     setComponentId(componentId);
   };
@@ -77,15 +77,15 @@ const ComponentMaster = () => {
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("formdata", formData);
+
     var projectids = formData.projectIds.toString();
     const updatedformdata = {
       ...formData,
       projectids,
     };
-    console.log("Form submitted", updatedformdata);
+
     const response = await updatecomponentmaster(updatedformdata);
-    console.log("response", response);
+ 
     if (response === -1) {
       handleCloseModal();
       fetchData();
@@ -150,7 +150,6 @@ const ComponentMaster = () => {
     const fetchProjects = async () => {
       try {
         const projects = await getallprojectlist();
-        console.log(projects);
         setProjects(projects.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -199,6 +198,7 @@ const ComponentMaster = () => {
 
   return (
     <>
+      <Header />
       {message && (
         <div
           id="toast-top-right"

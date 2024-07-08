@@ -13,6 +13,12 @@ export default {
       fontFamily: {
         Exo: "Exo",
       },
+      colors: {
+        lightblue: "#9eacfb",
+        darkblue: "#4338ca",
+        tablelight: "#f1f3fe",
+        tabledark: "#e3e7fe",
+      },
     },
   },
 

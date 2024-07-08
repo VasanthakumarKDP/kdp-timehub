@@ -2,10 +2,21 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaEye, FaSearch, FaRegEdit } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
-import { GetsingleBug, updateBugmaster } from "../Utils/action";
+import { FaUsersGear } from "react-icons/fa6";
+import {
+  GetsingleComponent,
+  GetsingleLeaveMaster,
+  createcomponent,
+  createleave,
+  getallprojectlist,
+  updatecomponentmaster,
+  updateleavemaster,
+} from "../Utils/action";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 
-const BugMaster = () => {
+const LeaveMaster = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -13,36 +24,73 @@ const BugMaster = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [openModal, setOpenModal] = useState(null);
-  const [bugId, setBugId] = useState(null);
+  const [leaveId, setLeaveId] = useState(null);
+  const [projects, setProjects] = useState([]);
+
   const [formData, setFormData] = useState({
-    bugId: "",
-    bugType1: "",
+    leaveId: "",
+    leaveName: "",
     status: false,
   });
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createFormData, setCreateFormData] = useState({
+    leaveName: "",
+    status: false,
+  });
+  const [createSelectedProjects, setCreateSelectedProjects] = useState([]);
 
   const pageSize = 5; // Set your desired page size here
+  const handleOpenCreateModal = () => {
+    setCreateModalOpen(true);
+  };
 
-  const handleOpenModal = (modalId, id) => {
-  
+  const redirecttoallocation = () => {
+    navigate("/leaveallocation");
+  };
+
+  const handleCloseCreateModal = () => {
+    setCreateModalOpen(false);
+    setCreateFormData({
+      leaveName: "",
+      status: true,
+    });
+    setCreateSelectedProjects([]);
+  };
+  const handleCreateSubmit = async (event) => {
+    event.preventDefault();
+    const newComponentData = {
+      ...createFormData,
+    };
+    const result = await createleave(newComponentData);
+    if (result === "Created") {
+      handleCloseCreateModal();
+      fetchData();
+      setMessage("New Leave Created");
+      setTimeout(() => setMessage(""), 3000);
+    }
+  };
+  const handleOpenModal = (modalId, leaveId) => {
     setOpenModal(modalId);
-    setBugId(id);
+    setLeaveId(leaveId);
   };
 
   const handleCloseModal = () => {
     setOpenModal(null);
-    setBugId(null);
+    setLeaveId(null);
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
 
- 
+    const updatedformdata = {
+      ...formData,
+    };
 
-    const response = await updateBugmaster(formData);
+    const response = await updateleavemaster(updatedformdata);
 
     if (response === -1) {
       handleCloseModal();
       fetchData();
-      setMessage("Bug Type Updated");
+      setMessage("Leave Master Updated");
 
       setTimeout(() => {
         setMessage(""); // Hide error after 3 seconds
@@ -50,31 +98,46 @@ const BugMaster = () => {
     }
   };
 
+  const handleChange = (selected) => {
+    setFormData({ ...formData, projectIds: selected.map((s) => s.value) });
+  };
+
   useEffect(() => {
-    if (openModal && bugId) {
+    if (openModal && leaveId) {
       async function fetchData() {
         try {
-          const result = await GetsingleBug(bugId);
-        
+          const result = await GetsingleLeaveMaster(leaveId);
+     
           if (result.data.length != 0) {
             // setEmployee(result.data[0]);
             setFormData({
-              bugId: result.data.id,
-
-              status: result.data.isActive,
-
-              bugType1: result.data.bugType1,
-            }); // Update state with the first object in result.data
+              leaveId: result.data.id,
+              status: result.data.isactive,
+              leaveName: result.data.leaveName,
+            });
           }
         } catch (error) {
-          console.error("Error fetching employee data:", error);
+          console.error("Error fetching Leave Master data:", error);
         }
       }
 
       fetchData();
     }
-  }, [openModal, bugId]);
+  }, [openModal, leaveId]);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const projects = await getallprojectlist();
 
+        setProjects(projects.data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+    fetchData();
+  }, []);
   useEffect(() => {
     fetchData();
   }, [currentPage]);
@@ -83,8 +146,9 @@ const BugMaster = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://samplerouting.findinternship.in/api/Bug?pageNumber=${currentPage}&pageSize=${pageSize}`
+        `https://samplerouting.findinternship.in/api/Leave?pageNumber=${currentPage}&pageSize=${pageSize}`
       );
+
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -109,7 +173,7 @@ const BugMaster = () => {
   };
 
   const filteredData = data.filter((item) =>
-    item.bugType1.toLowerCase().includes(searchTerm.toLowerCase())
+    item.leaveName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -118,23 +182,117 @@ const BugMaster = () => {
       {message && (
         <div
           id="toast-top-right"
-          className="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-black bg-lime-400 divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"
+          className="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-black bg-lime-400 divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-20 right-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"
           role="alert"
         >
           <div className="text-sm font-normal">{message}</div>
         </div>
       )}
+      {createModalOpen && (
+        <div
+          id="create-modal"
+          className="fixed top-0 left-0 z-50 w-full h-full flex justify-center items-center bg-black bg-opacity-50"
+        >
+          <div className="bg-white border shadow-sm rounded-xl max-w-sm w-full m-3">
+            <div className="flex justify-between items-center py-3 px-4 border-b">
+              <h3 className="font-bold">Create New Leave</h3>
+              <button
+                type="button"
+                className="h-7 w-7 text-gray-800 hover:bg-gray-100 rounded-full"
+                onClick={handleCloseCreateModal}
+              >
+                <svg
+                  className="h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4">
+              <form onSubmit={handleCreateSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium">
+                    Leave Name
+                  </label>
+                  <input
+                    type="text"
+                    value={createFormData.leaveName}
+                    onChange={(e) =>
+                      setCreateFormData({
+                        ...createFormData,
+                        leaveName: e.target.value,
+                      })
+                    }
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium">Status</label>
+                  <select
+                    value={createFormData.status}
+                    onChange={(e) =>
+                      setCreateFormData({
+                        ...createFormData,
+                        status: e.target.value === "true",
+                      })
+                    }
+                    className="w-full px-3 py-2 mt-1 border rounded-md"
+                  >
+                    <option value="true">Active</option>
+                    <option value="false">Not Active</option>
+                  </select>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    className="py-2 px-3 mr-2 bg-gray-200 rounded-md"
+                    onClick={handleCloseCreateModal}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="submit"
+                    className="py-2 px-3 bg-blue-600 text-white rounded-md"
+                  >
+                    Create
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="py-3 flex items-center text-sm text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">
-        Bug Master
+        Leave Master
       </div>
       <div className="grid grid-cols-6 gap-4">
-        <div className="col-start-1 col-end-3 ...">
+        <div className="col-start-1 col-end-3 gap-4">
           <button
             type="button"
-            className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
+            onClick={handleOpenCreateModal}
+            className="py-3 px-4 inline-flex items-center gap-5 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
           >
             Create New
             <IoMdAdd />
+          </button>
+          <button
+            type="button"
+            onClick={redirecttoallocation}
+            className="py-3  px-4 inline-flex items-center gap-5 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
+          >
+            Leave Allocation <FaUsersGear />
           </button>
         </div>
         <div className="col-end-7 col-span-2 ...">
@@ -143,7 +301,7 @@ const BugMaster = () => {
               <input
                 type="search"
                 className="peer py-3 pe-0 ps-8 block w-full bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-gray-200 text-sm focus:border-t-transparent focus:border-x-transparent focus:border-b-blue-500 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600"
-                placeholder="Bug Name"
+                placeholder="Leave Name"
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
@@ -162,7 +320,7 @@ const BugMaster = () => {
               <div className="flex flex-wrap items-center">
                 <div className="relative w-full px-4 max-w-full flex-grow flex-1">
                   <h3 className="font-semibold text-lg text-white">
-                    List of Bug Masters
+                    List of Leave Masters
                   </h3>
                 </div>
               </div>
@@ -187,10 +345,10 @@ const BugMaster = () => {
                   <thead>
                     <tr>
                       <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
-                        Bug ID
+                        Leave ID
                       </th>
                       <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
-                        Bug Name
+                        Leave Name
                       </th>
                       <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
                         Status
@@ -200,19 +358,19 @@ const BugMaster = () => {
                   </thead>
                   <tbody>
                     {filteredData.length > 0 ? (
-                      filteredData.map((bug) => (
-                        <tr key={bug.id}>
+                      filteredData.map((leave) => (
+                        <tr key={leave.id}>
                           <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
                             <span className="p-4 font-bold text-white">
-                              {bug.id}
+                              {leave.id}
                             </span>
                           </th>
                           <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {bug.bugType1}
+                            {leave.leaveName}
                           </td>
 
                           <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {bug.isActive ? "Active" : "Not Active"}
+                            {leave.isactive ? "Active" : "Not Active"}
                           </td>
                           <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right">
                             <div className="flex gap-4">
@@ -225,7 +383,7 @@ const BugMaster = () => {
                               <button
                                 type="button"
                                 onClick={() =>
-                                  handleOpenModal("hs-small-modal", bug.id)
+                                  handleOpenModal("hs-small-modal", leave.id)
                                 }
                                 className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-lime-500 disabled:opacity-50 disabled:pointer-events-none"
                               >
@@ -241,7 +399,7 @@ const BugMaster = () => {
                           colSpan="6"
                           className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-center"
                         >
-                          No Bug found
+                          No Leave found
                         </td>
                       </tr>
                     )}
@@ -326,7 +484,7 @@ const BugMaster = () => {
           <div className="bg-white border shadow-sm rounded-xl pointer-events-auto dark:bg-neutral-800 dark:border-neutral-700 dark:shadow-neutral-700/70 max-w-sm w-full m-3 sm:mx-auto transition-opacity duration-500 opacity-100">
             <div className="flex justify-between items-center py-3 px-4 border-b dark:border-neutral-700">
               <h3 className="font-bold text-gray-800 dark:text-white">
-                Edit Project Master
+                Edit Leave Master
               </h3>
               <button
                 type="button"
@@ -358,7 +516,7 @@ const BugMaster = () => {
                     htmlFor="id"
                     className="block text-sm font-medium text-gray-700 dark:text-white"
                   >
-                    Bug Id: {formData.bugId}
+                    Leave Id: {formData.leaveId}
                   </label>
                 </div>
 
@@ -367,15 +525,18 @@ const BugMaster = () => {
                     htmlFor="phonenumber"
                     className="block text-sm font-medium text-gray-700 dark:text-white"
                   >
-                    Bug Type
+                    Leave Name
                   </label>
                   <input
                     type="text"
                     id="rolename"
                     name="rolename"
-                    value={formData.bugType1}
+                    value={formData.leaveName}
                     onChange={(e) =>
-                      setFormData({ ...formData, bugType1: e.target.value })
+                      setFormData({
+                        ...formData,
+                        leaveName: e.target.value,
+                      })
                     }
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-white"
                     required
@@ -434,4 +595,4 @@ const BugMaster = () => {
   );
 };
 
-export default BugMaster;
+export default LeaveMaster;

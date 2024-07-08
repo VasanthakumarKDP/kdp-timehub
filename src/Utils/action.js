@@ -1,7 +1,6 @@
 import axios from "axios";
 
 export const login = async (info) => {
-  console.log("values", info);
   const { email, password } = info;
   try {
     const response = await axios.post(
@@ -9,7 +8,6 @@ export const login = async (info) => {
       { email, password }
     );
 
-    console.log({ response });
     if (response.data === "Invalid Credentials") {
       return response.data;
     } else {
@@ -27,7 +25,6 @@ export const login = async (info) => {
 };
 
 export const Getsingleprofile = async (id) => {
-  console.log("getid", id);
   try {
     const response = await axios.get(
       `https://samplerouting.findinternship.in/api/Profile/GetSingleProfile?id=${id}`
@@ -39,7 +36,6 @@ export const Getsingleprofile = async (id) => {
 };
 
 export const Getsinglerole = async (id) => {
-  console.log("getid", id);
   try {
     const response = await axios.get(
       `https://samplerouting.findinternship.in/api/Role/GetRoleById/${id}`
@@ -52,7 +48,6 @@ export const Getsinglerole = async (id) => {
 
 export const updaterolemaster = async (formData) => {
   try {
-    console.log(formData);
     var Id = formData.roleId;
     let UpdatedBy = localStorage.getItem("id");
     const { roleId, rolename, status } = formData;
@@ -70,10 +65,9 @@ export const updaterolemaster = async (formData) => {
 };
 
 export const Getsingleproject = async (id) => {
-  console.log("getid", id);
   try {
     const response = await axios.get(
-      `https://localhost:7060/api/Project/GetProjectById/${id}`
+      `https://samplerouting.findinternship.in/api/Project/GetProjectById/${id}`
     );
     return response;
   } catch (error) {
@@ -82,7 +76,6 @@ export const Getsingleproject = async (id) => {
 };
 
 export const GetsingleBug = async (id) => {
-  console.log("getid", id);
   try {
     const response = await axios.get(
       `https://samplerouting.findinternship.in/api/Bug/GetBugById/${id}`
@@ -94,7 +87,6 @@ export const GetsingleBug = async (id) => {
 };
 export const updatecomponentmaster = async (formData) => {
   try {
-    console.log(formData);
     var Id = formData.componentId;
     let UpdatedBy = localStorage.getItem("id");
     var projectids = formData.projectids;
@@ -113,7 +105,6 @@ export const updatecomponentmaster = async (formData) => {
   } catch (error) {}
 };
 export const GetsingleComponent = async (id) => {
-  console.log("getid", id);
   try {
     const response = await axios.get(
       `https://samplerouting.findinternship.in/api/Components/GetComponentById/${id}`
@@ -123,9 +114,30 @@ export const GetsingleComponent = async (id) => {
     throw error;
   }
 };
+
+export const GetComponentbyproject = async (id) => {
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Bug/GetComponentByProjectId/${id}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+export const Getactivebug = async () => {
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Bug/GetActiveBug`
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 export const updateBugmaster = async (formData) => {
   try {
-    console.log(formData);
     var Id = formData.bugId;
     let UpdatedBy = localStorage.getItem("id");
     const { bugType1, status } = formData;
@@ -144,12 +156,11 @@ export const updateBugmaster = async (formData) => {
 
 export const updateprojectmaster = async (formData) => {
   try {
-    console.log(formData);
     var Id = formData.projectId;
     let UpdatedBy = localStorage.getItem("id");
     const { projectname, status } = formData;
     const response = await axios.post(
-      "https://localhost:7060/api/Project/Updateproject",
+      "https://samplerouting.findinternship.in/api/Project/Updateproject",
       { Id, projectname, status, UpdatedBy }
     );
 
@@ -183,9 +194,30 @@ export const getallprojectlist = async () => {
   }
 };
 
-export const UpdatesingleUser = async (formData) => {
-  console.log("newformdata", formData);
+export const getallholidaylist = async () => {
+  try {
+    // Simulate a 3-second delay
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Leave/Getallholiday`
+    );
+    return response;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
 
+export const getallleavemaster = async () => {
+  try {
+    // Simulate a 3-second delay
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Leave/GetAllLeaveMaster`
+    );
+    return response;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+export const UpdatesingleUser = async (formData) => {
   try {
     var Username = formData.name;
     const isactive = formData.status;
@@ -205,8 +237,6 @@ export const UpdatesingleUser = async (formData) => {
 //Create new Component Master
 export const createcomponent = async (values) => {
   try {
-    console.log("values", values);
-
     const userid = localStorage.getItem("id");
     const name = values.componentName;
     const { status } = values;
@@ -214,6 +244,166 @@ export const createcomponent = async (values) => {
     const response = await axios.post(
       "https://samplerouting.findinternship.in/api/Components/CreatenewComponent",
       { projectids, name, status, userid }
+    );
+
+    if (response.status >= 200) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {}
+};
+
+export const createleave = async (values) => {
+  try {
+    const createdby = localStorage.getItem("id");
+    const leavemaster = values.leaveName;
+    const { status } = values;
+    const response = await axios.post(
+      "https://samplerouting.findinternship.in/api/Leave/CreateLeaveMaster",
+      { leavemaster, status, createdby }
+    );
+
+    if (response.status >= 200) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {}
+};
+
+export const updateleavemaster = async (formData) => {
+  try {
+    var Id = formData.leaveId;
+    let UpdatedBy = localStorage.getItem("id");
+    var leavemaster = formData.leaveName;
+    const { status } = formData;
+    const response = await axios.post(
+      "https://samplerouting.findinternship.in/api/Leave/UpdateLeaveMaster",
+      { Id, leavemaster, status, UpdatedBy }
+    );
+    if (response.status >= 200) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {}
+};
+
+export const GetsingleLeaveMaster = async (id) => {
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Leave/GetLeaveById/${id}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const GetsingleLeaveAllocate = async (id) => {
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Leave/GetLeaveallocateById/${id}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateleaveallocation = async (formData) => {
+  try {
+    var Id = formData.PId;
+    var leavemaster = "string";
+    var fullname = "string";
+    var status = true;
+    var createdby = 0;
+    const noofdays = String(0);
+    const planned = formData.planned;
+    const unplanned = formData.unplanned;
+    const selfmarraige = formData.selfmarraige;
+    const sbimarriage = formData.sbimarriage;
+    const bereavement = formData.bereavement;
+    let UpdatedBy = localStorage.getItem("id");
+    const response = await axios.post(
+      "https://samplerouting.findinternship.in/api/Leave/UpdateLeaveAllocate",
+      {
+        Id,
+        leavemaster,
+        fullname,
+        planned,
+        noofdays,
+        unplanned,
+        selfmarraige,
+        sbimarriage,
+        bereavement,
+        UpdatedBy,
+      }
+    );
+    if (response.status >= 200) {
+      return response;
+    } else {
+      return response;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const createnewleavereq = async (values) => {
+  try {
+    const leaveId = values.selectedLeaveId;
+    const startdate = values.startDate;
+    const enddate = values.endDate;
+    const noofdays = String(values.totalDays);
+
+    var leavemaster = "string";
+    var fullname = "string";
+    const createdby = localStorage.getItem("id");
+    const profileid = localStorage.getItem("id");
+    const response = await axios.post(
+      "https://samplerouting.findinternship.in/api/Leave/CreateNewLeave",
+      {
+        leaveId,
+        leavemaster,
+        fullname,
+        profileid,
+        startdate,
+        enddate,
+        noofdays,
+        createdby,
+      }
+    );
+
+    if (response.status >= 200) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {}
+};
+
+export const deleteleavereq = async (values) => {
+  try {
+    const leaveid = values;
+    const UpdatedBy = localStorage.getItem("id");
+    var leavemaster = "string";
+    var fullname = "string";
+    const startdate = new Date();
+    const enddate = new Date();
+    const noofdays = "string";
+    const response = await axios.post(
+      "https://samplerouting.findinternship.in/api/Leave/DeleteLeaveRequest",
+      {
+        leaveid,
+        leavemaster,
+        fullname,
+        startdate,
+        enddate,
+        noofdays,
+        UpdatedBy,
+      }
     );
 
     if (response.status >= 200) {

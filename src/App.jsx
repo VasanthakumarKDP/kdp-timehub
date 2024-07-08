@@ -24,6 +24,10 @@ import RoleMaster from "./pages/RoleMaster";
 import BugMaster from "./pages/BugMaster";
 import EmployeeMaster from "./pages/EmployeeMaster";
 import ViewEmployee from "./pages/ViewEmployee";
+import LeaveMaster from "./pages/LeaveMaster";
+import Leave from "./pages/Leave";
+import LeaveAllocation from "./pages/LeaveAllocation";
+
 function App() {
   const auth = localStorage.getItem("token");
   return (
@@ -32,14 +36,7 @@ function App() {
         <Routes>
           <Route element={<PrivateRoutes />}>
             <Route element={<RootLayout />} path="/Home" index />
-            <Route
-              element={
-                <RootLayout>
-                  <Authentication />
-                </RootLayout>
-              }
-              path="/Home"
-            />
+
             <Route
               element={
                 <RootLayout>
@@ -64,6 +61,23 @@ function App() {
                 </RootLayout>
               }
               path="/employee"
+            />
+            <Route
+              element={
+                <RootLayout>
+                  <LeaveAllocation />
+                </RootLayout>
+              }
+              path="/leaveallocation"
+            />
+
+            <Route
+              element={
+                <RootLayout>
+                  <Leave />
+                </RootLayout>
+              }
+              path="/leavetransaction"
             />
             <Route
               element={
@@ -110,6 +124,14 @@ function App() {
             <Route
               element={
                 <RootLayout>
+                  <LeaveMaster />
+                </RootLayout>
+              }
+              path="/leavemaster"
+            />
+            <Route
+              element={
+                <RootLayout>
                   <Notification />
                 </RootLayout>
               }
@@ -119,7 +141,7 @@ function App() {
 
           <Route
             path="login"
-            element={auth ? <Navigate to="/Home" /> : <LoginScreen />}
+            element={auth ? <Navigate to="/" /> : <LoginScreen />}
           />
         </Routes>
       </Router>

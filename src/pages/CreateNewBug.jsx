@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 const CreateNewBug = () => {
   const { bID } = useParams();
-  console.log({ bID });
+
   return (
     <>
       <h1>Bug / {bID}</h1>

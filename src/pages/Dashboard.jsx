@@ -2,10 +2,15 @@ import React, { useState, useEffect } from "react";
 
 import { GiBugNet } from "react-icons/gi";
 import { FaBug, FaBugSlash } from "react-icons/fa6";
+
 import { VscDebugAll } from "react-icons/vsc";
+import WelcomeBanner from "../components/WelcomeBanner";
+import Header from "../components/Header";
+import axios from "axios";
 const Dashboard = () => {
   const [greeting, setGreeting] = useState("");
-  const username = localStorage.getItem("name");
+  const id = localStorage.getItem("id");
+  const [leaveData, setLeaveData] = useState([]);
   useEffect(() => {
     // Get the current hour
     const currentHour = new Date().getHours();
@@ -18,24 +23,42 @@ const Dashboard = () => {
     } else {
       setGreeting("Good Evening");
     }
+    // API call to fetch leave data
+    const fetchLeaveData = async () => {
+      try {
+        const response = await axios.get(
+          `https://samplerouting.findinternship.in/api/Leave/GetLeaveTransactiondashboard/${id}`
+        );
+        setLeaveData(response.data);
+      } catch (error) {
+        console.error("Error fetching leave data:", error);
+      }
+    };
+
+    fetchLeaveData();
   }, []);
+
   return (
     <>
-      <div className="flex gap-10">
+      <div>
         {" "}
-        <h2 className="text-sm "> Hi {` ${username},${greeting}`}</h2>
+        <Header />
+        {/* <h2 className="text-sm "> Hi {` ${username},${greeting}`}</h2> */}
         {/* For Weather */}
         {/* <div className=" flex w-[550px] bg-slate-300 h-[40px] rounded-md">
           <div>Hi {` ${username},${greeting}`}</div>
         </div> */}
       </div>
-
+      <WelcomeBanner />
       <>
-        <div className="container px-5 py-10 mx-auto">
+        {/* <h1 className=" m-5 text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold mb-1">
+          Leave Transaction
+        </h1>
+        <hr class="border-blue-500"></hr> */}
+        <div className="container">
           <div className="flex flex-wrap -m-4 text-center">
-            <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-              <div className="flex border-b-4 gap-4 items-center shadow-lg bg-lime-400 border-b-lime-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110 group ">
-                {/* <img src={totalbug} className="w-[30px] h-[30px]" /> */}
+            {/* <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
+              <div className="flex border-b-4 gap-4 items-center shadow-lg bg-lightblue border-b-darkblue px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110 group ">
                 <GiBugNet className="w-[35px] h-[35px] font-bold " />
                 <h2 className="title-font font-medium text-3xl text-white">
                   15500
@@ -44,32 +67,77 @@ const Dashboard = () => {
                   Total bugs
                 </p>
               </div>
-            </div>
-            <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-              <div className=" flex border-b-4 gap-4 items-center shadow-lg bg-lime-400 border-b-lime-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
+            </div> */}
+            {/* <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
+              <div className=" flex border-b-4 gap-4 items-center shadow-lg  bg-lightblue border-b-darkblue px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
                 <FaBug className="w-[35px] h-[35px]  " />
-                <h2 className="title-font font-medium text-3xl text-white">1.3K</h2>
+                <h2 className="title-font font-medium text-3xl text-white">
+                  1.3K
+                </h2>
                 <p className="leading-relaxed text-white font-semibold text-[17px]">
                   Open Bugs
                 </p>
               </div>
-            </div>
-            <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-              <div className="flex border-b-4 gap-4 items-center shadow-lg bg-lime-400 border-b-lime-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
+            </div> */}
+            {/* <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
+              <div className="flex border-b-4 gap-4 items-center shadow-lg  bg-lightblue border-b-darkblue px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
                 <FaBugSlash className="w-[35px] h-[35px]  " />
-                <h2 className="title-font font-medium text-3xl text-white">74</h2>
+                <h2 className="title-font font-medium text-3xl text-white">
+                  74
+                </h2>
                 <p className="leading-relaxed text-white font-semibold text-[17px]">
                   Closed Bugs
                 </p>
               </div>
-            </div>
-            <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-              <div className="flex border-b-4 gap-4 items-center shadow-lg bg-lime-400 border-b-lime-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
+            </div> */}
+            {/* <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
+              <div className="flex border-b-4 gap-4 items-center shadow-lg  bg-lightblue border-b-darkblue px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
                 <VscDebugAll className="w-[35px] h-[35px] " />
-                <h2 className="title-font font-medium text-3xl text-white">46</h2>
+                <h2 className="title-font font-medium text-3xl text-white">
+                  46
+                </h2>
                 <p className="leading-relaxed text-white font-semibold text-[17px]">
                   Assigned Bugs
                 </p>
+              </div>
+            </div> */}
+          </div>
+
+          <div className="p-4 md:w-1/4 sm:w-1/2 w-full ">
+            <div className="weather flex min-h-[10em] min-w-[16em] flex-col items-center justify-center shadow-lg  rounded-lg border-b-4 border-b-darkblue bg-gradient-to-r from-indigo-500 to-blue-300  text-[#fff]  ">
+              <div className="flex h-fit w-full items-center justify-center gap-[1em]">
+                <img
+                  width="48"
+                  height="48"
+                  src="https://img.icons8.com/fluency/48/leave-house.png"
+                  alt="leave-house"
+                />
+              </div>
+
+              <div className="flex h-fit w-full items-center justify-between">
+                <div className="flex h-fit w-full flex-col items-start justify-between text-[0.75em]">
+                  <div className="flex flex-row items-center justify-center gap-[0.5em] p-[0.25em]">
+                    <span className="h-[0.5em] w-[1px] rounded-full "></span>
+                    <p>Planned Leave</p>
+                    <span className="h-[1.5em] w-[1px] rounded-full bg-[#000000]"></span>
+                    <p>
+                      {leaveData.length > 0
+                        ? `  ${leaveData[0].takenPlannedDays} / ${leaveData[0].plannedLeave}`
+                        : "Loading..."}
+                    </p>
+                  </div>
+                  <div className="flex flex-row items-center justify-center gap-[0.5em] p-[0.25em]">
+                    <span className="h-[0.5em] w-[1px] rounded-full "></span>
+                    <p>Unplanned Leave</p>
+                    <span className="h-[1.5em] w-[1px] rounded-full bg-[#000000]"></span>
+                    <p>
+                      {leaveData.length > 0
+                        ? `  ${leaveData[0].takenUnplannedDays} / ${leaveData[0].unPlannedLeave}`
+                        : "Loading..."}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex h-full w-[6rem] flex-col items-center py-[0.25em] text-[0.625em]"></div>
               </div>
             </div>
           </div>

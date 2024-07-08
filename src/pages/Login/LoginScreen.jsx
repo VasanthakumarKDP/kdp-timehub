@@ -25,8 +25,7 @@ const LoginScreen = () => {
 
         return;
       } else {
-        console.log("redirected from login page");
-        navigate("/");
+         navigate("/");
       }
     } catch (error) {
       console.error("Login failed:", error);

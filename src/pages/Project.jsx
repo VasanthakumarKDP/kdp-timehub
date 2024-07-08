@@ -26,7 +26,7 @@ const Project = () => {
   const pageSize = 5; // Set your desired page size here
 
   const handleOpenModal = (modalId, id) => {
-    console.log("project", id);
+  
     setOpenModal(modalId);
     setProjectId(id);
   };
@@ -38,10 +38,10 @@ const Project = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log("Form submitted", formData);
+
 
     const response = await updateprojectmaster(formData);
-    console.log("response", response);
+
     if (response === -1) {
       handleCloseModal();
       fetchData();
@@ -58,7 +58,7 @@ const Project = () => {
       async function fetchData() {
         try {
           const result = await Getsingleproject(projectId);
-          console.log("result.data", result.data);
+  
           if (result.data.length != 0) {
             // setEmployee(result.data[0]);
             setFormData({

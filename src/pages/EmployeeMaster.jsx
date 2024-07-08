@@ -1,26 +1,126 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { FaEye, FaSearch, FaRegEdit } from "react-icons/fa";
-import { IoMdAdd } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
 import {
-  GetMasterRole,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { FaEye, FaRegEdit } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import DownloadBtn from "../Utils/DownloadBtn";
+import DebouncedInput from "../Utils/DebouncedInput";
+import { SearchIcon } from "../Utils/Icons";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import {
   Getsingleprofile,
   UpdatesingleUser,
+  GetMasterRole,
 } from "../Utils/action";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
 const EmployeeMaster = () => {
+  const navigate = useNavigate();
+  const columnHelper = createColumnHelper();
+
+  const columns = [
+    columnHelper.accessor("id", {
+      id: "id",
+      cell: (info) => <span>{info.getValue()}</span>,
+      header: "ID",
+    }),
+    columnHelper.accessor("fullName", {
+      cell: (info) => <span>{info.getValue()}</span>,
+      header: "FullName",
+    }),
+    columnHelper.accessor("isActive", {
+      cell: (info) => (
+        <span>
+          {info.getValue() ? (
+            <span className="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+              Active
+            </span>
+          ) : (
+            <span className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
+              Not Active
+            </span>
+          )}
+        </span>
+      ),
+      header: "Status",
+    }),
+    columnHelper.accessor("phonenumber", {
+      cell: (info) => <span>{info.getValue()}</span>,
+      header: "phone Number",
+    }),
+    columnHelper.accessor("email", {
+      cell: (info) => <span>{info.getValue()}</span>,
+      header: "Email Address",
+    }),
+    columnHelper.display({
+      id: "actions",
+      cell: (info) => (
+        <div className="flex space-x-2">
+          <button
+            type="button"
+            onClick={() => handleViewProfile(info.row.original.id)}
+            className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-darkblue disabled:opacity-50 disabled:pointer-events-none"
+          >
+            <FaEye />
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              handleOpenModal("hs-small-modal", info.row.original.id)
+            }
+            className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-darkblue disabled:opacity-50 disabled:pointer-events-none"
+          >
+            <FaRegEdit />
+          </button>
+        </div>
+      ),
+    }),
+  ];
+
+  const handleViewProfile = (id) => {
+    navigate(`/viewemployee/${id}`); // Navigate to the employee detail page with the employee ID
+  };
+
   const [data, setData] = useState([]);
-  const [message, setMessage] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState("");
   const [openModal, setOpenModal] = useState(null);
   const [employeeId, setEmployeeId] = useState(null);
   const [roles, setRoles] = useState([]);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `https://samplerouting.findinternship.in/api/Profile/GetallProfile`
+      );
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const [formData, setFormData] = useState({
     employeeId: "",
     name: "",
@@ -33,7 +133,6 @@ const EmployeeMaster = () => {
   });
 
   const handleOpenModal = (modalId, employeeId) => {
-    console.log("empid", employeeId);
     setOpenModal(modalId);
     setEmployeeId(employeeId);
   };
@@ -48,14 +147,14 @@ const EmployeeMaster = () => {
     const selectedRole = roles.find(
       (role) => role.roleName === formData.rolename
     );
-    console.log("selected", selectedRole);
-    console.log("Form submitted", formData);
+
     const roleId = selectedRole.roleId;
     const response = await UpdatesingleUser({ ...formData, roleId });
-    console.log("response", response);
+
     if (response === "Profile Updated") {
       handleCloseModal();
       setMessage("Profile Updated");
+      fetchData();
       setTimeout(() => {
         setMessage(""); // Hide error after 3 seconds
       }, 3000);
@@ -67,10 +166,9 @@ const EmployeeMaster = () => {
         try {
           const result = await Getsingleprofile(employeeId);
           const getmasterlist = await GetMasterRole();
-          console.log(getmasterlist);
+
           setRoles(getmasterlist.data);
           if (result.data && result.data.length > 0) {
-            console.log("result.data", result.data[0]);
             // setEmployee(result.data[0]);
             setFormData({
               employeeId: employeeId,
@@ -91,277 +189,178 @@ const EmployeeMaster = () => {
     }
   }, [openModal, employeeId]);
 
-  const pageSize = 5; // Set your desired page size here
-  const navigate = useNavigate(); // Get the navigation function
-
-  useEffect(() => {
-    fetchData();
-  }, [currentPage]);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `https://samplerouting.findinternship.in/api/Profile?pageNumber=${currentPage}&pageSize=${pageSize}`
-      );
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      setData(response.data.data); // Assuming the actual data is in the 'data' field
-      setTotalPages(response.data.totalPages); // Adjust according to actual API response structure
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
+  const handleView = (row) => {
+    // Add your view logic here
   };
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      globalFilter,
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getFilteredRowModel: getFilteredRowModel(),
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  const filteredData = data.filter(
-    (item) =>
-      item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.phonenumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.fullName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleviewprofile = (id) => {
-    navigate(`/viewemployee/${id}`); // Navigate to the employee detail page with the employee ID
-  };
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <>
+      <Header />
       {message && (
         <div
           id="toast-top-right"
-          className="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-black bg-lime-400 divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"
+          className="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-black bg-lime-400 divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-20 right-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"
           role="alert"
         >
           <div className="text-sm font-normal">{message}</div>
         </div>
       )}
-
-      <div className="py-3 flex items-center text-sm text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">
-        Employee Master
-      </div>
-
-      <div className="grid grid-cols-6 gap-4">
-        <div className="col-start-1 col-end-3 ...">
+      <div className="p-2 max-w-full mx-auto text-white fill-gray-400">
+        <div className="flex justify-between mb-2">
+          <div className="w-full flex items-center gap-1">
+            <SearchIcon />
+            <DebouncedInput
+              value={globalFilter ?? ""}
+              onChange={(value) => setGlobalFilter(String(value))}
+              className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-darkblue text-[12px] text-black"
+              placeholder="Search..."
+            />
+          </div>
           <button
             type="button"
-            className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
+            className="text-[12px] text-white font-semibold bg-darkblue h-10 w-24  hover:bg-gradient-to-br focus:ring-4 focus:outline-none  rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
           >
-            Create New
-            <IoMdAdd />
+            Create
           </button>
+          <DownloadBtn data={data} fileName={"Employee List"} />
         </div>
-        <div className="col-end-7 col-span-2 ...">
-          <div className="max-w-sm space-y-3">
-            <div className="relative">
-              <input
-                type="search"
-                className="peer py-3 pe-0 ps-8 block w-full bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-gray-200 text-sm focus:border-t-transparent focus:border-x-transparent focus:border-b-blue-500 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600"
-                placeholder="Employee Name/ Phone number / Email Address"
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-              <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-2 peer-disabled:opacity-50 peer-disabled:pointer-events-none">
-                <FaSearch />
-              </div>
-            </div>
-          </div>
+        <table className="w-full text-center  ">
+          <thead className="bg-darkblue  ">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className="capitalize px-3.5 py-2 text-[14px] font-medium "
+                  >
+                    <div
+                      {...{
+                        onClick: header.column.getToggleSortingHandler(),
+                        className: header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : "",
+                      }}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {{
+                        asc: " 🔼",
+                        desc: " 🔽",
+                      }[header.column.getIsSorted()] ?? null}
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row, i) => (
+                <tr
+                  key={row.id}
+                  className={`
+                ${i % 2 === 0 ? "bg-tablelight" : "bg-tabledark"}
+                `}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="px-3.5 py-2 text-[12px] text-black"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr className="text-center h-32 text-[14px] font-medium text-black">
+                <td colSpan={12}>No Record Found!</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        {/* pagination */}
+        <div className="flex items-center justify-end mt-2 gap-2">
+          <button
+            onClick={() => {
+              table.previousPage();
+            }}
+            disabled={!table.getCanPreviousPage()}
+            className="p-1 border border-gray-300 px-2 disabled:opacity-30 text-[15px] text-black"
+          >
+            {"<"}
+          </button>
+          <button
+            onClick={() => {
+              table.nextPage();
+            }}
+            disabled={!table.getCanNextPage()}
+            className="p-1 border border-gray-300 px-2 disabled:opacity-30 text-[15px] text-black"
+          >
+            {">"}
+          </button>
+
+          <span className="flex items-center gap-1">
+            <div className="text-[12px] text-black">Page</div>
+            <strong className="text-[12px] text-black">
+              {table.getState().pagination.pageIndex + 1} of{" "}
+              {table.getPageCount()}
+            </strong>
+          </span>
+          <span className="flex items-center gap-1 text-[12px] text-black">
+            | Go to page:
+            <input
+              type="number"
+              defaultValue={table.getState().pagination.pageIndex + 1}
+              onChange={(e) => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                table.setPageIndex(page);
+              }}
+              className="border p-1 rounded w-16 bg-transparent text-[12px] text-black"
+            />
+          </span>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => {
+              table.setPageSize(Number(e.target.value));
+            }}
+            className="p-2 bg-transparent text-[12px] text-black"
+          >
+            {[10, 20, 30, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
-      <div className="flex w-full"></div>
-      <section className="relative py-10 bg-blueGray-50 shadow-lg">
-        <div className=" w-full mb-12 px-4">
-          <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded bg-slate-800 text-white">
-            <div className="rounded-t mb-0 px-4 py-3 border-0">
-              <div className="flex flex-wrap items-center">
-                <div className="relative w-full px-4 max-w-full flex-grow flex-1">
-                  <h3 className="font-semibold text-lg text-white">
-                    Employee Status
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div className="block w-full overflow-x-auto">
-              {loading ? (
-                <div className="min-h-60 flex flex-col bg-slate-500 border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700 dark:shadow-neutral-700/70">
-                  <div className="flex flex-auto flex-col justify-center items-center p-4 md:p-5">
-                    <div className="flex justify-center">
-                      <div
-                        className="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-white rounded-full dark:text-white"
-                        role="status"
-                        aria-label="loading"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <table className="items-center w-full bg-transparent border-collapse">
-                  <thead>
-                    <tr>
-                      <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
-                        Employee ID
-                      </th>
-                      <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
-                        Employee Name
-                      </th>
-                      <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
-                        Email Address
-                      </th>
-                      <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
-                        Phone Number
-                      </th>
-                      <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700">
-                        Status
-                      </th>
-                      <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-slate-700 text-slate-300 border-slate-700"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredData.length > 0 ? (
-                      filteredData.map((employee) => (
-                        <tr key={employee.id}>
-                          <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
-                            <span className="p-4 font-bold text-white">
-                              {employee.id}
-                            </span>
-                          </th>
-                          <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {employee.fullName}
-                          </td>
-                          <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {employee.email}
-                          </td>
-                          <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {employee.phonenumber}
-                          </td>
-                          <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {employee.isActive ? "Active" : "Not Active"}
-                          </td>
-
-                          <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right">
-                            <div></div>
-                            <div className="flex gap-4">
-                              <button
-                                data-tooltip-target="tooltip-dark"
-                                type="button"
-                                onClick={() => handleviewprofile(employee.id)}
-                                className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-lime-500 disabled:opacity-50 disabled:pointer-events-none"
-                              >
-                                <FaEye />
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleOpenModal("hs-small-modal", employee.id)
-                                }
-                                className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-lime-500 disabled:opacity-50 disabled:pointer-events-none"
-                              >
-                                <FaRegEdit />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan="6"
-                          className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-center"
-                        >
-                          No employee found
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-          <nav className="flex items-center gap-x-1">
-            <button
-              type="button"
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-2 text-sm rounded-lg border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-lime-400 disabled:opacity-50 disabled:pointer-events-none dark:border-transparent dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
-              disabled={currentPage === 1}
-            >
-              <svg
-                className="flex-shrink-0 size-3.5"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m15 18-6-6 6-6"></path>
-              </svg>
-              <span aria-hidden="true" className="sr-only">
-                Previous
-              </span>
-            </button>
-            <div className="flex items-center gap-x-1">
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`min-h-[38px] min-w-[38px] flex justify-center items-center border ${
-                    currentPage === index + 1
-                      ? "border-gray-200 bg-lime-500"
-                      : "border-transparent text-gray-800 hover:bg-gray-100"
-                  } py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-lime-500 disabled:opacity-50 disabled:pointer-events-none dark:border-neutral-700 dark:text-white dark:focus:bg-white/10`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => handlePageChange(currentPage + 1)}
-              className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-2 text-sm rounded-lg border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:border-transparent dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
-              disabled={currentPage === totalPages}
-            >
-              <span aria-hidden="true" className="sr-only">
-                Next
-              </span>
-              <svg
-                className="flex-shrink-0 size-3.5"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m9 18 6-6-6-6"></path>
-              </svg>
-            </button>
-          </nav>
-        </div>
-      </section>
-
       {openModal === "hs-small-modal" && (
         <div
           id="hs-small-modal"

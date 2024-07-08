@@ -20,5 +20,5 @@
 }
 
 .active {
-  @apply bg-gradient-to-r from-lime-100 to-lime-400 text-lime-950;
+  @apply bg-darkblue text-white;
 }

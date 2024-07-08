@@ -21,7 +21,7 @@ const RoleMaster = () => {
 
   const pageSize = 5; // Set your desired page size here
   const handleOpenModal = (modalId, roleId) => {
-    console.log("empid", roleId);
+
     setOpenModal(modalId);
     setRoleId(roleId);
   };
@@ -33,10 +33,10 @@ const RoleMaster = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log("Form submitted", formData);
+
 
     const response = await updaterolemaster(formData);
-    console.log("response", response);
+
     if (response === -1) {
       handleCloseModal();
       fetchData();
@@ -53,7 +53,7 @@ const RoleMaster = () => {
       async function fetchData() {
         try {
           const result = await Getsinglerole(roleId);
-          console.log("result.data", result.data.roleName);
+
           if (result.data.length != 0) {
             // setEmployee(result.data[0]);
             setFormData({
@@ -86,7 +86,7 @@ const RoleMaster = () => {
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      console.log("response", response.data);
+
       setData(response.data.data); // Assuming the actual data is in the 'data' field
       setTotalPages(response.data.totalPages); // Adjust according to actual API response structure
     } catch (error) {
