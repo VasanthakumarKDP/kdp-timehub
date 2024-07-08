@@ -419,7 +419,7 @@ const Leave = () => {
                   <DatePicker
                     selected={createFormData.startDate}
                     onChange={handleStartDateChange}
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm"
                     required
                     filterDate={isWeekdayAndNotHoliday}
                   />
@@ -435,7 +435,7 @@ const Leave = () => {
                       <DatePicker
                         disabled
                         selected={createFormData.startDate}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-200"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-200 text-sm"
                         required
                         minDate={createFormData.startDate}
                         filterDate={isWeekdayAndNotHoliday}
@@ -449,7 +449,7 @@ const Leave = () => {
                         type="text"
                         value="0.5"
                         readOnly
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-sm"
                       />
                     </div>
                   </>
@@ -462,7 +462,7 @@ const Leave = () => {
                       <DatePicker
                         selected={createFormData.endDate}
                         onChange={handleEndDateChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm"
                         required
                         minDate={createFormData.startDate}
                         filterDate={isWeekdayAndNotHoliday}
@@ -482,7 +482,7 @@ const Leave = () => {
                           })
                         }
                         readOnly
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-sm"
                       />
                     </div>
                   </>

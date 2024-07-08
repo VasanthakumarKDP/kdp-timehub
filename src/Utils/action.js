@@ -26,7 +26,7 @@ export const login = async (info) => {
       secureLocalStorage.setItem("JX8tKX+J9YwrPaEdSEwF+w==", userid); //User Id
       localStorage.setItem("token", token);
       localStorage.setItem("name", name);
-      localStorage.setItem("id", userid);
+
       return response;
     }
   } catch (error) {}
