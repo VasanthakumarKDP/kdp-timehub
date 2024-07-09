@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { TbUserStar } from "react-icons/tb";
 import { FaEye, FaSearch, FaRegEdit } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { Getsinglerole, updaterolemaster } from "../Utils/action";
+import { useNavigate } from "react-router-dom";
 
 const RoleMaster = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [message, setMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,7 +24,6 @@ const RoleMaster = () => {
 
   const pageSize = 5; // Set your desired page size here
   const handleOpenModal = (modalId, roleId) => {
-
     setOpenModal(modalId);
     setRoleId(roleId);
   };
@@ -32,8 +34,6 @@ const RoleMaster = () => {
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-
 
     const response = await updaterolemaster(formData);
 
@@ -105,6 +105,9 @@ const RoleMaster = () => {
       setCurrentPage(newPage);
     }
   };
+  const handleAssign = () => {
+    navigate(`/assignrole`); // Navigate to the employee detail page with the employee ID
+  };
 
   const filteredData = data.filter((item) =>
     item.roleName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -126,13 +129,21 @@ const RoleMaster = () => {
         Role Master
       </div>
       <div className="grid grid-cols-6 gap-4">
-        <div className="col-start-1 col-end-3 ...">
+        <div className="flex col-start-1 col-end-3 gap-3">
           <button
             type="button"
             className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
           >
             Create New
             <IoMdAdd />
+          </button>
+          <button
+            type="button"
+            className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
+            onClick={() => handleAssign()}
+          >
+            Assign Role
+            <TbUserStar />
           </button>
         </div>
         <div className="col-end-7 col-span-2 ...">

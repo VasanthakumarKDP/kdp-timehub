@@ -27,6 +27,7 @@ import ViewEmployee from "./pages/ViewEmployee";
 import LeaveMaster from "./pages/LeaveMaster";
 import Leave from "./pages/Leave";
 import LeaveAllocation from "./pages/LeaveAllocation";
+import AssignRole from "./pages/AssignRole";
 
 function App() {
   const auth = localStorage.getItem("token");
@@ -53,7 +54,14 @@ function App() {
               }
               path="/viewemployee/:id"
             />
-
+            <Route
+              element={
+                <RootLayout>
+                  <AssignRole />
+                </RootLayout>
+              }
+              path="/assignrole"
+            />
             <Route
               element={
                 <RootLayout>

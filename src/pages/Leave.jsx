@@ -42,7 +42,6 @@ const Leave = () => {
   const [message, setMessage] = useState("");
   const [openModal, setOpenModal] = useState(null);
   const [leaveId, setLeaveId] = useState(null);
-  const [roles, setRoles] = useState([]);
   const [createFormData, setCreateFormData] = useState({
     selectedLeaveId: "",
     totalDays: 0,
@@ -61,6 +60,7 @@ const Leave = () => {
     setleavemaster(leavemaster.data);
   };
   const [days, setDays] = useState(0);
+  let roleid = secureLocalStorage.getItem("UezU/D9QwECM6CHTuH6Iow==");
 
   const calculateWeekdays = (startDate, endDate) => {
     const daysArray = eachDayOfInterval({ start: startDate, end: endDate });
@@ -155,22 +155,23 @@ const Leave = () => {
 
         return (
           <div className="flex space-x-2">
+            {roleid !== 3 && (
+              <button
+                type="button"
+                // onClick={() =>
+                //   handleOpenModal("hs-small-modal", info.row.original.id)
+                // }
+                className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-darkblue disabled:opacity-50 disabled:pointer-events-none"
+              >
+                <FaRegEdit />
+              </button>
+            )}
             <button
               type="button"
               onClick={() => handleViewProfile(info.row.original.id)}
               className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-darkblue disabled:opacity-50 disabled:pointer-events-none"
             >
               <FaEye />
-            </button>
-
-            <button
-              type="button"
-              // onClick={() =>
-              //   handleOpenModal("hs-small-modal", info.row.original.id)
-              // }
-              className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-darkblue disabled:opacity-50 disabled:pointer-events-none"
-            >
-              <FaRegEdit />
             </button>
 
             <button
@@ -245,11 +246,6 @@ const Leave = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleOpenModal = (modalId, leaveId) => {
-    setOpenModal(modalId);
-    setLeaveId(leaveId);
   };
 
   const handleCloseModal = () => {

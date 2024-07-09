@@ -111,7 +111,7 @@ const EmployeeMaster = () => {
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+      console.log(response.data);
       setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
