@@ -27,7 +27,9 @@ import ViewEmployee from "./pages/ViewEmployee";
 import LeaveMaster from "./pages/LeaveMaster";
 import Leave from "./pages/Leave";
 import LeaveAllocation from "./pages/LeaveAllocation";
+import ApproveLeave from "./pages/ApproveLeave";
 import AssignRole from "./pages/AssignRole";
+import ViewApproveLeave from "./pages/ViewApproveLeave";
 
 function App() {
   const auth = localStorage.getItem("token");
@@ -78,7 +80,22 @@ function App() {
               }
               path="/leaveallocation"
             />
-
+            <Route
+              element={
+                <RootLayout>
+                  <ApproveLeave />
+                </RootLayout>
+              }
+              path="/approveleave"
+            />
+            <Route
+              element={
+                <RootLayout>
+                  <ViewApproveLeave />
+                </RootLayout>
+              }
+              path="/viewApproveLeave/:id"
+            />
             <Route
               element={
                 <RootLayout>

@@ -27,7 +27,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { eachDayOfInterval, format, isSameDay, startOfDay } from "date-fns";
 import secureLocalStorage from "react-secure-storage";
 
-const Leave = () => {
+const ApproveLeave = () => {
   const navigate = useNavigate();
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
@@ -48,9 +48,6 @@ const Leave = () => {
     startDate: null, // You might want to set a default start date
     endDate: null, // You might want to set a default end date
   });
-  const redirecttoapproval = () => {
-    navigate("/approveleave");
-  };
   const handleOpenCreateModal = async () => {
     setCreateModalOpen(true);
     const response = await getallholidaylist();
@@ -64,7 +61,7 @@ const Leave = () => {
   };
   const [days, setDays] = useState(0);
   let roleid = secureLocalStorage.getItem("UezU/D9QwECM6CHTuH6Iow==");
-
+  let pid = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
   const calculateWeekdays = (startDate, endDate) => {
     const daysArray = eachDayOfInterval({ start: startDate, end: endDate });
     const weekdays = daysArray.filter((day) => {
@@ -86,14 +83,14 @@ const Leave = () => {
   const columnHelper = createColumnHelper();
 
   const columns = [
-    columnHelper.accessor("id", {
+    columnHelper.accessor("leaveId", {
       id: "id",
       cell: (info) => <span>{info.getValue()}</span>,
       header: "ID",
     }),
-    columnHelper.accessor("employeeName", {
+    columnHelper.accessor("fullName", {
       cell: (info) => <span>{info.getValue()}</span>,
-      header: "Leave Applied By",
+      header: "Employee Name",
     }),
     columnHelper.accessor("leaveName", {
       cell: (info) => <span>{info.getValue()}</span>,
@@ -103,13 +100,13 @@ const Leave = () => {
       cell: (info) => <span>{info.getValue()}</span>,
       header: "Days Applied",
     }),
-    columnHelper.accessor("startDate", {
+    columnHelper.accessor("start_Date", {
       cell: (info) => (
         <span>{format(new Date(info.getValue()), "dd-MM-yyyy")}</span>
       ),
       header: "Start Date",
     }),
-    columnHelper.accessor("endDate", {
+    columnHelper.accessor("end_Date", {
       cell: (info) => (
         <span>{format(new Date(info.getValue()), "dd-MM-yyyy")}</span>
       ),
@@ -122,12 +119,12 @@ const Leave = () => {
 
         switch (status) {
           case "3":
-            statusText = "Leave Applied";
+            statusText = "Requested";
             statusColor = "bg-yellow-300 text-yellow-800";
             break;
           case "1":
             statusText = "Approved";
-            statusColor = "bg-green-300 text-green-800";
+            statusColor = "bg-green-500 text-white";
             break;
           case "2":
             statusText = "Rejected";
@@ -147,7 +144,7 @@ const Leave = () => {
       },
       header: "Status",
     }),
-    columnHelper.accessor("approvedBy", {
+    columnHelper.accessor("approvedByName", {
       cell: (info) => <span>{info.getValue()}</span>,
       header: "Approved By",
     }),
@@ -158,20 +155,9 @@ const Leave = () => {
 
         return (
           <div className="flex space-x-2">
-            {roleid !== 3 && (
-              <button
-                type="button"
-                // onClick={() =>
-                //   handleOpenModal("hs-small-modal", info.row.original.id)
-                // }
-                className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-darkblue disabled:opacity-50 disabled:pointer-events-none"
-              >
-                <FaRegEdit />
-              </button>
-            )}
             <button
               type="button"
-              onClick={() => handleViewProfile(info.row.original.id)}
+              onClick={() => handleViewApproval(info.row.original.leaveId)}
               className="flex flex-shrink-0 justify-center items-center gap-2 size-[38px] text-sm font-semibold rounded-lg border border-transparent bg-slate-600 text-white hover:bg-darkblue disabled:opacity-50 disabled:pointer-events-none"
             >
               <FaEye />
@@ -197,7 +183,14 @@ const Leave = () => {
     }),
   ];
 
-  const handleViewProfile = (id) => {
+  const handleViewApproval = (id) => {
+    // console.log("id", id);
+    // console.log("Pid", pid);
+    // const formData = {
+    //   id,
+    //   pid,
+    // };
+
     navigate(`/viewApproveLeave/${id}`); // Navigate to the employee detail page with the employee ID
   };
 
@@ -209,7 +202,7 @@ const Leave = () => {
     };
 
     const result = await createnewleavereq(formData);
-    console.log("response", result);
+
     if (result === 1) {
       handleCloseCreateModal();
       fetchData();
@@ -232,12 +225,10 @@ const Leave = () => {
     try {
       let loggedin = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
 
-      const url =
-        loggedin === 33
-          ? `https://samplerouting.findinternship.in/api/Leave/Getallleave`
-          : `https://samplerouting.findinternship.in/api/Leave/GetLeaveTransactionbyprofile/${loggedin}`;
+      const url = `https://samplerouting.findinternship.in/api/Leave/GetLeaveTransforTL/${loggedin}`;
 
       const response = await axios.get(url);
+      console.log("response", response.data);
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -518,22 +509,7 @@ const Leave = () => {
               placeholder="Search..."
             />
           </div>
-          {roleid == 4 && (
-            <button
-              onClick={redirecttoapproval}
-              type="button"
-              className="text-[12px] text-white font-semibold bg-darkblue h-10 w-24  hover:bg-gradient-to-br focus:ring-4 focus:outline-none  rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-            >
-              Approve
-            </button>
-          )}
-          <button
-            onClick={handleOpenCreateModal}
-            type="button"
-            className="text-[12px] text-white font-semibold bg-darkblue h-10 w-24  hover:bg-gradient-to-br focus:ring-4 focus:outline-none  rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-          >
-            Create
-          </button>
+
           <DownloadBtn data={data} fileName={"Leave List"} />
         </div>
         <table className="w-full text-center  ">
@@ -573,8 +549,8 @@ const Leave = () => {
                 <tr
                   key={row.id}
                   className={`
-                ${i % 2 === 0 ? "bg-tablelight" : "bg-tabledark"}
-                `}
+                  ${i % 2 === 0 ? "bg-tablelight" : "bg-tabledark"}
+                  `}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td
@@ -718,4 +694,4 @@ const Leave = () => {
   );
 };
 
-export default Leave;
+export default ApproveLeave;

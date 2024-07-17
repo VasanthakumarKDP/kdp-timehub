@@ -106,7 +106,7 @@ const Sidebar = () => {
                 Dashboard
               </NavLink>
             </li>
-            {[1, 3, 6].includes(roleid) && (
+            {[1, 3, 4, 6].includes(roleid) && (
               <li>
                 <NavLink to="/leavetransaction" className="link">
                   <FaUserCog size={23} className="min-w-max" />

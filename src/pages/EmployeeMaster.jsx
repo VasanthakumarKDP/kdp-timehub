@@ -7,6 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import Select from "react-select";
 import { FaEye, FaRegEdit } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import DownloadBtn from "../Utils/DownloadBtn";
@@ -19,11 +20,29 @@ import {
   Getsingleprofile,
   UpdatesingleUser,
   GetMasterRole,
+  getallprojectlist,
+  getteammember,
 } from "../Utils/action";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 const EmployeeMaster = () => {
   const navigate = useNavigate();
+  const [teammember, setteammember] = useState([]);
+  const [createSelectedTeammembers, setCreateSelectedTeammembers] = useState(
+    []
+  );
+  const [projects, setProjects] = useState([]);
+  const [createSelectedProjects, setCreateSelectedProjects] = useState([]);
+  const [data, setData] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState("");
+  const [openModal, setOpenModal] = useState(null);
+  const [employeeId, setEmployeeId] = useState(null);
+  const [roles, setRoles] = useState([]);
+
   const columnHelper = createColumnHelper();
 
   const columns = [
@@ -90,15 +109,6 @@ const EmployeeMaster = () => {
     navigate(`/viewemployee/${id}`); // Navigate to the employee detail page with the employee ID
   };
 
-  const [data, setData] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [sorting, setSorting] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState("");
-  const [openModal, setOpenModal] = useState(null);
-  const [employeeId, setEmployeeId] = useState(null);
-  const [roles, setRoles] = useState([]);
   useEffect(() => {
     fetchData();
   }, []);
@@ -111,7 +121,7 @@ const EmployeeMaster = () => {
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      console.log(response.data);
+
       setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -125,11 +135,12 @@ const EmployeeMaster = () => {
     employeeId: "",
     name: "",
     email: "",
-
     phonenumber: "",
     status: false,
     dob: new Date(),
     rolename: "",
+    projectIds: [],
+    teammembers: [],
   });
 
   const handleOpenModal = (modalId, employeeId) => {
@@ -140,6 +151,8 @@ const EmployeeMaster = () => {
   const handleCloseModal = () => {
     setOpenModal(null);
     setEmployeeId(null);
+    setCreateSelectedProjects(null);
+    setCreateSelectedTeammembers(null);
   };
 
   const handleSubmit = async (event) => {
@@ -148,8 +161,15 @@ const EmployeeMaster = () => {
       (role) => role.roleName === formData.rolename
     );
 
+    var projectids = formData.projectIds.toString();
+    var teammembers = formData.teammembers.toString();
     const roleId = selectedRole.roleId;
-    const response = await UpdatesingleUser({ ...formData, roleId });
+    console.log("formdata1", { ...formData, roleId });
+    const response = await UpdatesingleUser({
+      ...formData,
+      roleId,
+      projectids,
+    });
 
     if (response === "Profile Updated") {
       handleCloseModal();
@@ -165,8 +185,12 @@ const EmployeeMaster = () => {
       async function fetchData() {
         try {
           const result = await Getsingleprofile(employeeId);
-          const getmasterlist = await GetMasterRole();
 
+          const getmasterlist = await GetMasterRole();
+          const projectresult = await getallprojectlist();
+          const teammemberresult = await getteammember();
+          setteammember(teammemberresult.data);
+          setProjects(projectresult.data);
           setRoles(getmasterlist.data);
           if (result.data && result.data.length > 0) {
             // setEmployee(result.data[0]);
@@ -366,7 +390,7 @@ const EmployeeMaster = () => {
           id="hs-small-modal"
           className="hs-overlay fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto bg-black bg-opacity-50 flex justify-center items-center"
         >
-          <div className="bg-white border shadow-sm rounded-xl pointer-events-auto dark:bg-neutral-800 dark:border-neutral-700 dark:shadow-neutral-700/70 max-w-sm w-full m-3 sm:mx-auto transition-opacity duration-500 opacity-100">
+          <div className="bg-white border shadow-sm rounded-xl pointer-events-auto dark:bg-neutral-800 dark:border-neutral-700 dark:shadow-neutral-700/70 max-w-2xl w-full  m-3 sm:mx-auto transition-opacity duration-500 opacity-100">
             <div className="flex justify-between items-center py-3 px-4 border-b dark:border-neutral-700">
               <h3 className="font-bold text-gray-800 dark:text-white">
                 Edit {formData.name}'s Details
@@ -395,132 +419,216 @@ const EmployeeMaster = () => {
               </button>
             </div>
             <div className="p-4 overflow-y-auto">
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label
-                    htmlFor="id"
-                    className="block text-sm font-medium text-gray-700 dark:text-white"
-                  >
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="hidden">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-white">
                     Employee Id: {formData.employeeId}
                   </label>
-
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 dark:text-white"
-                  >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-white"
-                    required
-                  />
                 </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 dark:text-white"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-white"
-                    required
-                  />
+                <div className="flex flex-wrap justify-between gap-4">
+                  <div className="w-full sm:w-[48%]">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700 dark:text-white"
+                    >
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      className="mt-1 block w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-white"
+                      required
+                    />
+                  </div>
+                  <div className="w-full sm:w-[48%]">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700 dark:text-white"
+                    >
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      className="mt-1 text-sm block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-white"
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="phonenumber"
-                    className="block text-sm font-medium text-gray-700 dark:text-white"
-                  >
-                    Phone Number
-                  </label>
-                  <input
-                    type="number"
-                    id="phonenumber"
-                    name="phonenumber"
-                    value={formData.phonenumber}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phonenumber: e.target.value })
-                    }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-white"
-                    required
-                  />
+                <div className="flex flex-wrap justify-between gap-4">
+                  <div className="w-full sm:w-[48%]">
+                    <label
+                      htmlFor="phonenumber"
+                      className="block text-sm font-medium text-gray-700 dark:text-white"
+                    >
+                      Phone Number
+                    </label>
+                    <input
+                      type="number"
+                      id="phonenumber"
+                      name="phonenumber"
+                      value={formData.phonenumber}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          phonenumber: e.target.value,
+                        })
+                      }
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-white text-sm"
+                      required
+                    />
+                  </div>
+                  <div className="w-full sm:w-[48%]">
+                    <label
+                      htmlFor="dob"
+                      className="block text-sm font-medium text-gray-700 dark:text-white"
+                    >
+                      Date of Birth
+                    </label>
+                    <DatePicker
+                      id="dob"
+                      selected={formData.dob}
+                      onChange={(date) =>
+                        setFormData({ ...formData, dob: date })
+                      }
+                      className="mt-1 block w-[100%] border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-white"
+                      dateFormat="dd-MM-yyyy"
+                    />
+                  </div>
                 </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="dob"
-                    className="block text-sm font-medium text-gray-700 dark:text-white"
-                  >
-                    Date of Birth
-                  </label>
-                  <DatePicker
-                    id="dob"
-                    selected={formData.dob}
-                    onChange={(date) => setFormData({ ...formData, dob: date })}
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-white"
-                    dateFormat="dd-MM-yyyy"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Role
-                  </label>
-                  <select
-                    value={formData.rolename}
-                    onChange={(e) =>
-                      setFormData({ ...formData, rolename: e.target.value })
-                    }
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  >
-                    {roles.map((role) => (
-                      <option key={role.roleId} value={role.roleName}>
-                        {role.roleName}
+                <div className="flex flex-wrap justify-between gap-4">
+                  <div className="w-full sm:w-[48%]">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                      htmlFor="role"
+                    >
+                      Role
+                    </label>
+                    <select
+                      id="role"
+                      value={formData.rolename}
+                      onChange={(e) =>
+                        setFormData({ ...formData, rolename: e.target.value })
+                      }
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                    >
+                      {roles.map((role) => (
+                        <option key={role.roleId} value={role.roleName}>
+                          {role.roleName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="w-full sm:w-[48%]">
+                    <label
+                      htmlFor="status"
+                      className="block text-sm font-medium text-gray-700 dark:text-white"
+                    >
+                      Status
+                    </label>
+                    <select
+                      id="status"
+                      name="status"
+                      className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200 text-sm"
+                      value={formData.status}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          status: e.target.value === "true",
+                        })
+                      }
+                    >
+                      <option value="true" className="text-sm">
+                        Active
                       </option>
-                    ))}
-                  </select>
+                      <option value="false" className="text-sm">
+                        Not Active
+                      </option>
+                    </select>
+                  </div>
                 </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="status"
-                    className="block text-sm font-medium text-gray-700 dark:text-white"
-                  >
-                    Status
-                  </label>
-
-                  <select
-                    id="status"
-                    name="status"
-                    className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-                    value={formData.status}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        status: e.target.value === "true",
-                      })
-                    }
-                  >
-                    <option value="true" className="text-sm">
-                      Active
-                    </option>
-                    <option value="false" className="text-sm">
-                      Not Active
-                    </option>
-                  </select>
-                </div>
+                {formData.rolename === "Team Leader" && (
+                  <div className="flex flex-wrap justify-between gap-4">
+                    <div className="w-full sm:w-[48%]">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="role"
+                      >
+                        Assign Project
+                      </label>
+                      <Select
+                        isMulti
+                        options={projects.map((project) => ({
+                          value: project.id,
+                          label: project.projectName,
+                        }))}
+                        value={createSelectedProjects}
+                        onChange={(selected) => {
+                          setCreateSelectedProjects(selected);
+                          setFormData({
+                            ...formData,
+                            projectIds: selected.map((s) => s.value),
+                          });
+                        }}
+                        required
+                      />
+                    </div>
+                    <div className="w-full sm:w-[48%]">
+                      <label
+                        htmlFor="status"
+                        className="block text-sm font-medium text-gray-700 dark:text-white"
+                      >
+                        Assign Team Member
+                      </label>
+                      <Select
+                        isMulti
+                        options={teammember.map((project) => ({
+                          value: project.id,
+                          label: project.fullName,
+                        }))}
+                        value={createSelectedTeammembers}
+                        onChange={(selected) => {
+                          setCreateSelectedTeammembers(selected);
+                          setFormData({
+                            ...formData,
+                            teammembers: selected.map((s) => s.value),
+                          });
+                        }}
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+                {/* {formData.rolename === "Team Leader" && (
+                  <div className="mb-4">
+                    <label
+                      htmlFor="address"
+                      className="block text-sm font-medium text-gray-700 dark:text-white"
+                    >
+                      Address
+                    </label>
+                    <input
+                      type="text"
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={(e) =>
+                        setFormData({ ...formData, address: e.target.value })
+                      }
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
+                    />
+                  </div>
+                )} */}
                 <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t dark:border-neutral-700">
                   <button
                     type="button"

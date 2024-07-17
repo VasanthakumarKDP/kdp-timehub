@@ -112,6 +112,7 @@ export const updatecomponentmaster = async (formData) => {
     }
   } catch (error) {}
 };
+
 export const GetsingleComponent = async (id) => {
   try {
     const response = await axios.get(
@@ -225,16 +226,41 @@ export const getallleavemaster = async () => {
     console.error("Error fetching data:", error);
   }
 };
+
+export const getteammember = async () => {
+  try {
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Profile/GetTeammember`
+    );
+    return response;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
 export const UpdatesingleUser = async (formData) => {
   try {
+    console.log("formdata", formData);
     var Username = formData.name;
+    const projectids = formData.projectids;
+    const teammembers = formData.teammembers.toString();
     const isactive = formData.status;
     var ID = formData.employeeId;
     let UpdatedBy = secureLocalStorage.getItem("JX8tKX+J9YwrPaEdSEwF+w==");
     const { email, phonenumber, dob, roleId } = formData;
     const response = await axios.post(
       "https://samplerouting.findinternship.in/api/Profile/UpdateSingleuser",
-      { ID, Username, UpdatedBy, email, phonenumber, isactive, dob, roleId }
+      {
+        ID,
+        Username,
+        UpdatedBy,
+        email,
+        phonenumber,
+        isactive,
+        dob,
+        roleId,
+        projectids,
+        teammembers,
+      }
     );
     return response.data;
   } catch (error) {
@@ -325,8 +351,6 @@ export const updateleaveallocation = async (formData) => {
     var Id = formData.PId;
     var leavemaster = "string";
     var fullname = "string";
-    var status = true;
-    var createdby = 0;
     const noofdays = String(0);
     const planned = formData.planned;
     const unplanned = formData.unplanned;
@@ -422,4 +446,59 @@ export const deleteleavereq = async (values) => {
       return response;
     }
   } catch (error) {}
+};
+
+export const GetLeaveforUserView = async (values) => {
+  try {
+    let Lid = values.id;
+    let pid = values.pid;
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Leave/LeaveViewforUser/${pid}/${Lid}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const GetLeaveforApproval = async (values) => {
+  try {
+    console.log("values", values);
+    let Lid = values.id;
+    let pid = values.pid;
+    const response = await axios.get(
+      `https://samplerouting.findinternship.in/api/Leave/LeaveViewforApproval/${pid}/${Lid}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const LeaveApproved = async (values) => {
+  try {
+    console.log("values", values);
+    let Lid = values.id;
+    let pid = values.pid;
+    const response = await axios.post(
+      `https://samplerouting.findinternship.in/api/Leave/ApproveLeave?pid=${pid}&Lid=${Lid}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const LeaveRejected = async (values) => {
+  try {
+    console.log("values", values);
+    let Lid = values.id;
+    let pid = values.pid;
+    const response = await axios.post(
+      `https://samplerouting.findinternship.in/api/Leave/RejectLeave?pid=${pid}&Lid=${Lid}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
 };

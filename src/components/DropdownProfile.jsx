@@ -22,6 +22,8 @@ function DropdownProfile({ align }) {
         return "Developer";
       case 6:
         return "Tester";
+      case 4:
+        return "Team Leader";
       default:
         return "User";
     }
@@ -122,7 +124,7 @@ function DropdownProfile({ align }) {
                 to="/settings"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               >
-                Settings
+                Profile
               </Link>
             </li>
             <li>
