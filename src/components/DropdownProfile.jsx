@@ -9,6 +9,7 @@ function DropdownProfile({ align }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const username = localStorage.getItem("name");
   let roleId = secureLocalStorage.getItem("UezU/D9QwECM6CHTuH6Iow==");
+
   const trigger = useRef(null);
   const dropdown = useRef(null);
   const navigate = useNavigate();

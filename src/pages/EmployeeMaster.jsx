@@ -164,7 +164,7 @@ const EmployeeMaster = () => {
     var projectids = formData.projectIds.toString();
     var teammembers = formData.teammembers.toString();
     const roleId = selectedRole.roleId;
-    console.log("formdata1", { ...formData, roleId });
+  
     const response = await UpdatesingleUser({
       ...formData,
       roleId,

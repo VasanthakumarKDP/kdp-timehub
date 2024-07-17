@@ -239,7 +239,6 @@ export const getteammember = async () => {
 };
 export const UpdatesingleUser = async (formData) => {
   try {
-    console.log("formdata", formData);
     var Username = formData.name;
     const projectids = formData.projectids;
     const teammembers = formData.teammembers.toString();
@@ -463,7 +462,6 @@ export const GetLeaveforUserView = async (values) => {
 
 export const GetLeaveforApproval = async (values) => {
   try {
-    console.log("values", values);
     let Lid = values.id;
     let pid = values.pid;
     const response = await axios.get(
@@ -477,7 +475,6 @@ export const GetLeaveforApproval = async (values) => {
 
 export const LeaveApproved = async (values) => {
   try {
-    console.log("values", values);
     let Lid = values.id;
     let pid = values.pid;
     const response = await axios.post(
@@ -491,7 +488,6 @@ export const LeaveApproved = async (values) => {
 
 export const LeaveRejected = async (values) => {
   try {
-    console.log("values", values);
     let Lid = values.id;
     let pid = values.pid;
     const response = await axios.post(
