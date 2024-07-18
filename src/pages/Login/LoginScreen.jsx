@@ -53,7 +53,7 @@ const LoginScreen = () => {
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-slate-500 to-slate-800 w-full">
         <div className="bg-slate-800 border border-slate-600 rounded-md p-8 shadow-lg backdrop-filter backdrop-blur-lg bg-opacity-35 relative w-[450px]">
           <div className="text-2xl font-bold text-center mb-6 text-white">
-            Welcome Back1
+            Welcome Back
           </div>
           <form onSubmit={onFinish}>
             <div className="relative my-4">
